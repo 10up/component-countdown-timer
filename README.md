@@ -65,13 +65,12 @@ import CountdownTimer from '@10up/countdown-timer';
 
 component( '.countdown-timer', {
 	onCreate: function() {
-			console.log( 'onCreate callback' );
-		},
+		console.log( 'onCreate callback' );
+	},
 
-		onTick: function() {
-			console.log( 'onTick callback' );
-		}
-	} );
+	onTick: function() {
+		console.log( 'onTick callback' );
+	}
 } );
 ```
 
@@ -82,13 +81,12 @@ Include the `countdown-timer.js` file from the `dist/` directory and access the 
 ```javascript
 let countdownTimer = new TenUp.CountdownTimer( '.countdown-timer', {
 	onCreate: function() {
-			console.log( 'onCreate callback' );
-		},
+		console.log( 'onCreate callback' );
+	},
 
-		onTick: function() {
-			console.log( 'onTick callback' );
-		}
-	} );
+	onTick: function() {
+		console.log( 'onTick callback' );
+	}
 } );
 ```
 
