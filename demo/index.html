@@ -1,17 +1,24 @@
 <!doctype html>
 <html>
 	<head>
-		<title>10up Component Library | TenUpScaffold</title>
+		<title>10up Component Library | Countdown Timer</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link href="../dist/tenup-scaffold.css" rel="stylesheet">
+		<link href="../dist/countdown-timer.css" rel="stylesheet">
 	</head>
 	<body>
-		<div class="TenUp_Component">
-		</div>
-		<script src="../dist/tenup-scaffold.js"></script>
+		<time class="countdown-timer" datetime="2046-01-01T00:00:00Z"></time>
+		<script src="../dist/countdown-timer.js"></script>
 		<script>
-			let TenUpScaffold = new TenUp.TenUpScaffold();
+			let countdownTimer = new TenUp.CountdownTimer( '.countdown-timer', {
+				onCreate: function() {
+					console.log( 'onCreate callback' );
+				},
+
+				onTick: function() {
+					console.log( 'onTick callback' );
+				}
+			} );
 		</script>
 	</body>
 </html>

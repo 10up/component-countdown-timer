@@ -1,9 +1,9 @@
-// Component Scaffold
+// Countdown Timer Component
 
-import TenUpScaffold from './tenup-scaffold';
+import CountdownTimer from './countdown-timer';
 
 if ( 'object' !== typeof window.TenUp ) {
 	window.TenUp = {};
 }
 
-window.TenUp.TenUpScaffold = TenUpScaffold;
+window.TenUp.CountdownTimer = CountdownTimer;

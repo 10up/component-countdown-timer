@@ -1,16 +1,14 @@
-> NOTE: This is intended to be a boilerplate component. Clone this component, remove this comment, and use the rest as a starting point for your new compoent.
+# 10up Countdown Timer component
 
-# 10up Component Name
-
-Component Description
+> A countdown timer component that displays the number of days, hours, minutes, and seconds remaining until the time specified in the component's `datetime` attribute.
 
 ## Installation
 
 ### NPM
- `npm install --save @10up/component-name`
+ `npm install --save @10up/countdown-timer`
 
 ### Standalone
- Clone this repo and import `component.js` and `component.css` from the `dist/` directory.
+ Clone this repo and import `countdown-timer.js` and `countdown-timer.css` from the `dist/` directory.
 
 ## API
 
@@ -19,16 +17,26 @@ Component Description
 ### Callbacks
 
  - `onCreate`: Called after the component is initialized on page load
+ - `onTick`: Called each time the component updates its time (approximately once per second).
 
 ## Usage
 
+Create an empty `time` element with a class name of `countdown-timer` and give it a `datetime` attribute with a [valid date string](https://developer.mozilla.org/en-US/docs/Web/HTML/Date_and_time_formats) to count down to.
+
+Note that the remaining time displayed by the component will depend on the local timezone of the browser rendering it. You can control the behavior of the component by providing a date string that factors in timezone:
+
+ - If you provide a `datetime` in a local time zone, the component calculates the remaining time based on the user's local timezone. This is useful if you want to count down to an event relative local timezone, For example, to count down to midnight on New Year's Day in the year 2046 in the user's local timezone: `2046-01-01T00:00:00`
+ - If you provide a `datetime` in a specific timezone, the component which will factor in the difference between the specified timezone and the user's local timezone. This is useful if you want to count down to an event that occurs at an exact time in a specific time zone. For example, to count down to midnight on New Year's Day in the year 2046 in Eastern Standard Time (EST): `2046-01-01T00:00:00-04:00`
+ - If you provide a `datetime` in Greenwich Mean Time (GMT), the component will factor in the difference between GMT and the user's local timezone. This is useful if you want to count down to an exact time in GMT.  For example, to count down to midnight on New Year's Day in the year 2046 in GMT: `2046-01-01T00:00:00Z`
+
+If the component does not contain a `datetime` attribute, the `datetime` attribute is not a valid date string, or the date string is a date in the past, the component will display `00 : 00 : 00 : 00`.
+
 ### Markup
 
- This is the markup template expected by the component.
+ This is the markup template expected by the component. To count down to midnight on New Year's Day in the year 2046 in GMT:
 
  ```html
- <div class="component">
- </div>
+<time class="countdown-timer" datetime="2046-01-01T00:00:00Z"></time>
  ```
 
 ### CSS
@@ -36,10 +44,10 @@ Component Description
  The styles can be imported into your existing codebase by using PostCSS imports, or by including the standalone CSS file in your project.
 
 #### PostCSS Imports
- `@import '@10up/component-name';`
+ `@import '@10up/countdown-timer';`
 
 #### Standalone
- Include the `component.css` file from the `dist/` directory.
+ Include the `countdown-timer.css` file from the `dist/` directory.
 
 ### JavaScript
 
@@ -59,7 +67,7 @@ component( '.component', {
 
 #### Standalone
 
-Include the `component.js` file from the `dist/` directory and access the component from the gobal `TenUp` object.
+Include the `countdown-timer.js` file from the `dist/` directory and access the component from the gobal `TenUp` object.
 
 ```javascript
 let myComponent = new TenUp.component( '.component', {

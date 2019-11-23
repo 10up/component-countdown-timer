@@ -1,5 +1,35 @@
 @import 'assets/core.css';
 
-.tenup-scaffold {
+.countdown-timer {
+	display: flex;
+	font-size: 2rem;
 
+	& span {
+		display: block;
+	
+		&::after {
+			display: inline;
+			font-size: 1rem;
+		}
+
+		& + span {
+			margin-left: 1rem;
+		}
+	}
+
+	& .days::after {
+		content: ' days';
+	}
+
+	& .hours::after {
+		content: ' hours';
+	}
+
+	& .minutes::after {
+		content: ' minutes';
+	}
+
+	& .seconds::after {
+		content: ' seconds';
+	}
 }
