@@ -129,9 +129,16 @@ export default class CountdownTimer {
 			}
 
 			days.textContent = parsedDiff[0];
+			days.setAttribute( 'aria-label', parsedDiff[0] + ' days' );
+
 			hours.textContent = parsedDiff[1];
+			hours.setAttribute( 'aria-label', parsedDiff[1] + ' hours' );
+
 			minutes.textContent = parsedDiff[2];
+			minutes.setAttribute( 'aria-label', parsedDiff[2] + ' minutes' );
+
 			seconds.textContent = parsedDiff[3];
+			seconds.setAttribute( 'aria-label', parsedDiff[3] + ' seconds' );
 
 			/**
 			 * Called after the current countdown timer updates.
