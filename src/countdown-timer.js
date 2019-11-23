@@ -57,7 +57,7 @@ export default class CountdownTimer {
 		let time = new Date( timer.getAttribute( 'datetime' ) ).getTime();
 
 		if ( ! time || isNaN( time ) ) {
-			console.error( '10up Countdown Timer: Time not found. Each countdown timer must have a datetime attribute with a valid date string. See https://developer.mozilla.org/en-US/docs/Web/HTML/Date_and_time_formats for details on how to build a valid date string.' );
+			console.error( '10up Countdown Timer: Time not found. Each countdown timer must have a datetime attribute with a valid date string. See https://developer.mozilla.org/en-US/docs/Web/HTML/Date_and_time_formats for details on how to build a valid date string.' ); // eslint-disable-line
 			time = new Date().getTime();
 		}
 
@@ -110,6 +110,8 @@ export default class CountdownTimer {
 	 * @param {object} seconds HTML element to display remaining seconds.
 	 */
 	startTimer( time, days, hours, minutes, seconds ) {
+		let interval;
+
 		const updateTime = () => {
 			const now = new Date().getTime();
 			const diff = time - now;
@@ -151,7 +153,7 @@ export default class CountdownTimer {
 
 		updateTime();
 
-		const interval = window.setInterval( updateTime, 1000 );
+		interval = window.setInterval( updateTime, 1000 );
 	}
 
 	/**
