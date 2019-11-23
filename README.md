@@ -25,9 +25,12 @@ Create an empty `time` element with a class name of `countdown-timer` and give i
 
 Note that the remaining time displayed by the component will depend on the local timezone of the browser rendering it. You can control the behavior of the component by providing a date string that factors in timezone:
 
- - If you provide a `datetime` in a local time zone, the component calculates the remaining time based on the user's local timezone. This is useful if you want to count down to an event relative local timezone, For example, to count down to midnight on New Year's Day in the year 2046 in the user's local timezone: `2046-01-01T00:00:00`
- - If you provide a `datetime` in a specific timezone, the component which will factor in the difference between the specified timezone and the user's local timezone. This is useful if you want to count down to an event that occurs at an exact time in a specific time zone. For example, to count down to midnight on New Year's Day in the year 2046 in Eastern Standard Time (EST): `2046-01-01T00:00:00-04:00`
- - If you provide a `datetime` in Greenwich Mean Time (GMT), the component will factor in the difference between GMT and the user's local timezone. This is useful if you want to count down to an exact time in GMT.  For example, to count down to midnight on New Year's Day in the year 2046 in GMT: `2046-01-01T00:00:00Z`
+ - If you provide a `datetime` in a local time zone, the component calculates the remaining time based on the user's local timezone. This is useful if you want to count down to an event relative local timezone.
+   * For example, to count down to midnight on New Year's Day in the year 2046 in the user's local timezone: `2046-01-01T00:00:00`
+ - If you provide a `datetime` in a specific timezone, the component which will factor in the difference between the specified timezone and the user's local timezone. This is useful if you want to count down to an event that occurs at an exact time in a specific time zone.
+   * For example, to count down to midnight on New Year's Day in the year 2046 in Eastern Standard Time (EST): `2046-01-01T00:00:00-04:00`
+ - If you provide a `datetime` in Greenwich Mean Time (GMT), the component will factor in the difference between GMT and the user's local timezone. This is useful if you want to count down to an exact time in GMT.
+   * For example, to count down to midnight on New Year's Day in the year 2046 in GMT: `2046-01-01T00:00:00Z`
 
 If the component does not contain a `datetime` attribute, the `datetime` attribute is not a valid date string, or the date string is a date in the past, the component will display `00 : 00 : 00 : 00`.
 
