@@ -189,5 +189,4 @@ export default class CountdownTimer {
 
 		return [ pad( days ), pad( hours ), pad( minutes ), pad( seconds ) ];
 	}
-
 }

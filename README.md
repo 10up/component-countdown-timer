@@ -21,15 +21,17 @@
 
 ## Usage
 
-Create an empty `time` element with a class name of `countdown-timer` and give it a `datetime` attribute with a [valid date string](https://developer.mozilla.org/en-US/docs/Web/HTML/Date_and_time_formats) to count down to.
+Create an empty `time` element and give it a `datetime` attribute with a [valid date string](https://developer.mozilla.org/en-US/docs/Web/HTML/Date_and_time_formats) to count down to. Make sure the element is targetable with a selector that can be passed to the JavaScript. See the **JavaScript** section below on how to init. 
 
-Note that the remaining time displayed by the component will depend on the local timezone of the browser rendering it. You can control the behavior of the component by providing a date string that factors in timezone:
+You can create multiple instances on the same page—each will count down independently, as long as they can be targeted by the same selector and each contains a valid `datetime` attribute.
 
- - If you provide a `datetime` in a local time zone, the component calculates the remaining time based on the user's local timezone. This is useful if you want to count down to an event relative to local timezone.
-   * For example, to count down to midnight on New Year's Day in the year 2046 in the user's local timezone: `2046-01-01T00:00:00`
- - If you provide a `datetime` in a specific timezone, the component which will factor in the difference between the specified timezone and the user's local timezone. This is useful if you want to count down to an event that occurs at an exact time in a specific time zone.
+Note that the remaining time displayed by the component will depend on the local time zone of the browser rendering it. You can control the behavior of the component by providing a date string that factors in time zone:
+
+ - If you provide a `datetime` in a local time zone, the component calculates the remaining time based on the user's local time zone. This is useful if you want to count down to an event relative to local time zone.
+   * For example, to count down to midnight on New Year's Day in the year 2046 in the user's local time zone: `2046-01-01T00:00:00`
+ - If you provide a `datetime` in a specific time zone, the component which will factor in the difference between the specified time zone and the user's local time zone. This is useful if you want to count down to an event that occurs at an exact time in a specific time zone.
    * For example, to count down to midnight on New Year's Day in the year 2046 in Eastern Standard Time (EST): `2046-01-01T00:00:00-04:00`
- - If you provide a `datetime` in Greenwich Mean Time (GMT), the component will factor in the difference between GMT and the user's local timezone. This is useful if you want to count down to an exact time in GMT.
+ - If you provide a `datetime` in Greenwich Mean Time (GMT), the component will factor in the difference between GMT and the user's local time zone. This is useful if you want to count down to an exact time in GMT.
    * For example, to count down to midnight on New Year's Day in the year 2046 in GMT: `2046-01-01T00:00:00Z`
 
 If the component does not contain a `datetime` attribute, the `datetime` attribute is not a valid date string, or the date string is a date in the past, the component will display `00 : 00 : 00 : 00`.
@@ -59,12 +61,17 @@ If the component does not contain a `datetime` attribute, the `datetime` attribu
 #### NPM
 
 ```javascript
-import component from '@10up/component-name';
+import CountdownTimer from '@10up/countdown-timer';
 
-component( '.component', {
+component( '.countdown-timer', {
 	onCreate: function() {
-		console.log( 'onCreate callback' );
-	}
+			console.log( 'onCreate callback' );
+		},
+
+		onTick: function() {
+			console.log( 'onTick callback' );
+		}
+	} );
 } );
 ```
 
@@ -73,10 +80,15 @@ component( '.component', {
 Include the `countdown-timer.js` file from the `dist/` directory and access the component from the gobal `TenUp` object.
 
 ```javascript
-let myComponent = new TenUp.component( '.component', {
+let countdownTimer = new TenUp.CountdownTimer( '.countdown-timer', {
 	onCreate: function() {
-		console.log( 'onCreate callback' );
-	},
+			console.log( 'onCreate callback' );
+		},
+
+		onTick: function() {
+			console.log( 'onTick callback' );
+		}
+	} );
 } );
 ```
 
