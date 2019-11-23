@@ -17,7 +17,7 @@
 ### Callbacks
 
  - `onCreate`: Called after the component is initialized on page load
- - `onTick`: Called each time the component updates its time (approximately once per second).
+ - `onTick`: Called each time the component updates its time (approximately once per second). This callback is called with a single argument that represents the HTML element of the timer component that called it.
 
 ## Usage
 

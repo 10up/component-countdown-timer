@@ -97,19 +97,20 @@ export default class CountdownTimer {
 
 		timer.appendChild( fragment );
 
-		this.startTimer( time, days, hours, minutes, seconds );
+		this.startTimer( timer, time, days, hours, minutes, seconds );
 	}
 
 	/**
 	 * Start updating the display for the given timer elements.
 	 * 
+	 * @param {object} timer   HTML element for this timer.
 	 * @param {number} time    Time to count down to in UNIX time.
 	 * @param {object} days    HTML element to display remaining days.
 	 * @param {object} hours   HTML element to display remaining hours.
 	 * @param {object} minutes HTML element to display remaining minutes.
 	 * @param {object} seconds HTML element to display remaining seconds.
 	 */
-	startTimer( time, days, hours, minutes, seconds ) {
+	startTimer( timer, time, days, hours, minutes, seconds ) {
 		let interval;
 
 		const updateTime = () => {
@@ -147,7 +148,7 @@ export default class CountdownTimer {
 			 * @callback onTick
 			 */
 			if ( this.settings.onTick && 'function' === typeof this.settings.onTick ) {
-				this.settings.onTick.call();
+				this.settings.onTick.call( this, timer );
 			}
 		};
 

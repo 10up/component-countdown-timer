@@ -15,8 +15,8 @@
 					console.log( 'onCreate callback' );
 				},
 
-				onTick: function() {
-					console.log( 'onTick callback' );
+				onTick: function( instance ) {
+					console.log( 'onTick callback', instance );
 				}
 			} );
 		</script>
