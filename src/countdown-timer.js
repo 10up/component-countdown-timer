@@ -24,9 +24,10 @@ export default class CountdownTimer {
 			onCreate: null,
 			onTick: null,
 			compact: false,
-			hideZeroValues: true,
 			allowNegative: true,
+			padValues: false,
 			allowedIntervals: {
+				weeks: true,
 				days: true,
 				hours: true,
 				minutes: true,
@@ -84,67 +85,55 @@ export default class CountdownTimer {
 	 */
 	createElements( timer, time ) {
 		const span = document.createElement( 'span' );
-		const label = document.createElement( 'label' );
+		const weeks = span.cloneNode();
 		const days = span.cloneNode();
-		const daysLabel = label.cloneNode();
 		const hours = span.cloneNode();
-		const hoursLabel = label.cloneNode();
 		const minutes = span.cloneNode();
-		const minutesLabel = label.cloneNode();
 		const seconds = span.cloneNode();
-		const secondsLabel = label.cloneNode();
 		const fragment = document.createDocumentFragment();
+
+		weeks.className = 'weeks';
+		weeks.setAttribute( 'aria-label', 'weeks' );
 
 		days.className = 'days';
 		days.setAttribute( 'aria-label', 'days' );
-		daysLabel.className = 'days-label';
-		daysLabel.textContent = 'days';
 
 		hours.className = 'hours';
 		hours.setAttribute( 'aria-label', 'hours' );
-		hoursLabel.className = 'hours-label';
-		hoursLabel.textContent = 'hours';
 
 		minutes.className = 'minutes';
 		minutes.setAttribute( 'aria-label', 'minutes' );
-		minutesLabel.className = 'minutes-label';
-		minutesLabel.textContent = 'minutes';
 
 		seconds.className = 'seconds';
 		seconds.setAttribute( 'aria-label', 'seconds' );
-		secondsLabel.className = 'seconds-label';
-		secondsLabel.textContent = 'seconds';
+
+		if ( this.settings.allowedIntervals.weeks ) {
+			fragment.appendChild( weeks );
+			fragment.append( ' ' );
+		}
 
 		if ( this.settings.allowedIntervals.days ) {
 			fragment.appendChild( days );
-			fragment.append( ' ' );
-			fragment.appendChild( daysLabel );
 			fragment.append( ' ' );
 		}
 
 		if ( this.settings.allowedIntervals.hours ) {
 			fragment.appendChild( hours );
 			fragment.append( ' ' );
-			fragment.appendChild( hoursLabel );
-			fragment.append( ' ' );
 		}
 
 		if ( this.settings.allowedIntervals.minutes ) {
 			fragment.appendChild( minutes );
 			fragment.append( ' ' );
-			fragment.appendChild( minutesLabel );
-			fragment.append( ' ' );
 		}
 
 		if ( this.settings.allowedIntervals.seconds ) {
 			fragment.appendChild( seconds );
-			fragment.append( ' ' );
-			fragment.appendChild( secondsLabel );
 		}
 
 		timer.appendChild( fragment );
 
-		this.startTimer( timer, time, days, hours, minutes, seconds );
+		this.startTimer( timer, time, [ weeks, days, hours, minutes, seconds ] );
 	}
 
 	/**
@@ -157,17 +146,46 @@ export default class CountdownTimer {
 	 * @param {object} minutes HTML element to display remaining minutes.
 	 * @param {object} seconds HTML element to display remaining seconds.
 	 */
-	startTimer( timer, time, days, hours, minutes, seconds ) {
+	startTimer( timer, time, intervals ) {
 
 		/**
 		 * Update the timer display every second.
 		 */
 		const updateTime = () => {
+			const [ weeks, days, hours, minutes, seconds ] = intervals;
 			const now = new Date().getTime();
 			const diff = time - now;
 			const parsedDiff = this.formatDiff( diff );
-			const [ d, h, m, s ] = parsedDiff;
+			const [ w, d, h, m, s ] = parsedDiff;
+			let highestNonzero;
 
+			console.log( w, weeks );
+
+			// If compact option is enabled.
+			if ( this.settings.compact ) {
+				// Find the highest non-zero value.
+				parsedDiff.find( ( remaining, index ) => {
+					if ( 0 < remaining ) {
+						highestNonzero = index;
+						return remaining;
+					}
+				} );
+
+				// Hide all elements except the highest non-zero value.
+				if ( undefined !== highestNonzero ) {
+					intervals.forEach( ( interval, index ) => {
+						if ( highestNonzero === index ) {
+							if ( ! timer.contains( interval ) ) {
+								timer.appendChild( interval );
+							}
+						} else {
+							timer.contains( interval ) && timer.removeChild( interval );
+						}
+					} );
+				}
+			}
+
+			// If negative values are not allowed and the time is in the past, set everything to show 0.
 			if ( 0 >= diff && ! this.settings.allowNegative ) {
 				days.textContent = '00';
 				hours.textContent = '00';
@@ -181,10 +199,11 @@ export default class CountdownTimer {
 				return;
 			}
 
-			this.updateDisplay( timer, days, d, 'days' );
-			this.updateDisplay( timer, hours, h, 'hours' );
-			this.updateDisplay( timer, minutes, m, 'minutes' );
-			this.updateDisplay( timer, seconds, s, 'seconds' );
+			this.updateDisplay( timer, weeks, w, 'week', highestNonzero );
+			this.updateDisplay( timer, days, d, 'day', highestNonzero );
+			this.updateDisplay( timer, hours, h, 'hour', highestNonzero );
+			this.updateDisplay( timer, minutes, m, 'minute', highestNonzero );
+			this.updateDisplay( timer, seconds, s, 'second', highestNonzero );
 
 			/**
 			 * Called after the current countdown timer updates.
@@ -225,8 +244,14 @@ export default class CountdownTimer {
 		 * 
 		 * @param {number} n Number to pad.
 		 */
-		const pad = function ( n ) { return 10 > n && 0 <= n ? `0${ n }` : n; };
-			
+		const pad = ( n ) => {
+			if ( this.settings.padValues ) {
+				return 10 > n ? `0${ n }` : n;
+			} else {
+				return n;
+			}
+		};
+
 		let days = Math.floor( Math.abs( milliseconds ) / msPerDay ),
 			hours = Math.floor( ( Math.abs( milliseconds ) - days * msPerDay ) / msPerHour ),
 			minutes = Math.round( ( Math.abs( milliseconds ) - days * msPerDay - hours * msPerHour ) / msPerMinute ),
@@ -247,22 +272,25 @@ export default class CountdownTimer {
 			hours = 0;
 		}
 
-		return [ pad( days ), pad( hours ), pad( minutes ), pad( seconds ) ];
+		return [ 0, pad( days ), pad( hours ), pad( minutes ), pad( seconds ) ];
 	}
 
 	/**
 	 * Update the display of the given interval element, or remove it if settings allow.
 	 * 
-	 * @param {object} timer    HTML element for this timer.
-	 * @param {object} interval HTML element for the element to update or remove.
-	 * @param {string} value    String value to display in the interval element.
-	 * @param {string} label    String value to display as the interval label.
+	 * @param {object} timer          HTML element for this timer.
+	 * @param {object} interval       HTML element for the element to update or remove.
+	 * @param {string} value          String value to display in the interval element.
+	 * @param {string} label          String value to display as the interval label.
+	 * @param {number} highestNonzero Index of highest non-zero value in parsedDiff array.
 	 */
 	updateDisplay( timer, interval, value, label ) {
 		if ( timer.contains( interval ) ) {
 			// Otherwise, update the display.
-			interval.textContent = value;
-			interval.setAttribute( 'aria-label', `${ value } ${ label }` );
+			const s = 1 < value || 0 === value ? 's' : '';
+
+			interval.textContent = `${ value } ${ label }${ s }`;
+			interval.setAttribute( 'aria-label', `${ value } ${ label }${ s }` );
 		}
 	}
 }
