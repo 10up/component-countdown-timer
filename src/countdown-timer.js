@@ -61,6 +61,8 @@ export default class CountdownTimer {
 			time = new Date().getTime();
 		}
 
+		timer.textContent = '';
+
 		this.createElements( timer, time );
 	}
 
