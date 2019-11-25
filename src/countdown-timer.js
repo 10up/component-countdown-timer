@@ -72,28 +72,53 @@ export default class CountdownTimer {
 	 * @returns void
 	 */
 	createElements( timer, time ) {
-		const days = document.createElement( 'span' );
-		const hours = document.createElement( 'span' );
-		const minutes = document.createElement( 'span' );
-		const seconds = document.createElement( 'span' );
+		const span = document.createElement( 'span' );
+		const label = document.createElement( 'label' );
+		const days = span.cloneNode();
+		const daysLabel = label.cloneNode();
+		const hours = span.cloneNode();
+		const hoursLabel = label.cloneNode();
+		const minutes = span.cloneNode();
+		const minutesLabel = label.cloneNode();
+		const seconds = span.cloneNode();
+		const secondsLabel = label.cloneNode();
 		const fragment = document.createDocumentFragment();
 
 		days.className = 'days';
 		days.setAttribute( 'aria-label', 'days' );
+		daysLabel.className = 'days-label';
+		daysLabel.textContent = 'days';
 
 		hours.className = 'hours';
 		hours.setAttribute( 'aria-label', 'hours' );
+		hoursLabel.className = 'hours-label';
+		hoursLabel.textContent = 'hours';
 
 		minutes.className = 'minutes';
 		minutes.setAttribute( 'aria-label', 'minutes' );
+		minutesLabel.className = 'minutes-label';
+		minutesLabel.textContent = 'minutes';
 
 		seconds.className = 'seconds';
 		seconds.setAttribute( 'aria-label', 'seconds' );
-		
+		secondsLabel.className = 'seconds-label';
+		secondsLabel.textContent = 'seconds';
+
 		fragment.appendChild( days );
+		fragment.append( ' ' );
+		fragment.appendChild( daysLabel );
+		fragment.append( ' ' );
 		fragment.appendChild( hours );
+		fragment.append( ' ' );
+		fragment.appendChild( hoursLabel );
+		fragment.append( ' ' );
 		fragment.appendChild( minutes );
+		fragment.append( ' ' );
+		fragment.appendChild( minutesLabel );
+		fragment.append( ' ' );
 		fragment.appendChild( seconds );
+		fragment.append( ' ' );
+		fragment.appendChild( secondsLabel );
 
 		timer.appendChild( fragment );
 
@@ -111,12 +136,15 @@ export default class CountdownTimer {
 	 * @param {object} seconds HTML element to display remaining seconds.
 	 */
 	startTimer( timer, time, days, hours, minutes, seconds ) {
-		let interval;
 
+		/**
+		 * Update the timer display every second.
+		 */
 		const updateTime = () => {
 			const now = new Date().getTime();
 			const diff = time - now;
 			const parsedDiff = this.formatDiff( diff );
+			const [ d, h, m, s ] = parsedDiff;
 
 			if ( 0 >= diff ) {
 				days.textContent = '00';
@@ -131,17 +159,17 @@ export default class CountdownTimer {
 				return;
 			}
 
-			days.textContent = parsedDiff[0];
-			days.setAttribute( 'aria-label', parsedDiff[0] + ' days' );
+			days.textContent = d;
+			days.setAttribute( 'aria-label', `${ d } days` );
 
-			hours.textContent = parsedDiff[1];
-			hours.setAttribute( 'aria-label', parsedDiff[1] + ' hours' );
+			hours.textContent = h;
+			hours.setAttribute( 'aria-label', `${ h } hours` );
 
-			minutes.textContent = parsedDiff[2];
-			minutes.setAttribute( 'aria-label', parsedDiff[2] + ' minutes' );
+			minutes.textContent = m;
+			minutes.setAttribute( 'aria-label', `${ m } minutes` );
 
-			seconds.textContent = parsedDiff[3];
-			seconds.setAttribute( 'aria-label', parsedDiff[3] + ' seconds' );
+			seconds.textContent = s;
+			seconds.setAttribute( 'aria-label', `${ s } seconds` );
 
 			/**
 			 * Called after the current countdown timer updates.
@@ -154,7 +182,7 @@ export default class CountdownTimer {
 
 		updateTime();
 
-		interval = window.setInterval( updateTime, 1000 );
+		const interval = window.setInterval( updateTime, 1000 );
 	}
 
 	/**
@@ -163,15 +191,22 @@ export default class CountdownTimer {
 	 * @param {number} milliseconds Number of milleseconds remaining in the countdown.
 	 */
 	formatDiff( milliseconds ) {
-		let msPerDay = 24 * 60 * 60 * 1000,
-			msPerHour = 60 * 60 * 1000,
-			msPerMinute = 60 * 1000,
-			msPerSecond = 1000,
-			days = Math.floor( milliseconds / msPerDay ),
+		const msPerDay = 24 * 60 * 60 * 1000;
+		const msPerHour = 60 * 60 * 1000;
+		const msPerMinute = 60 * 1000;
+		const msPerSecond = 1000;
+		
+		/**
+		 * Check if given number `n` is less than 10, and pad with a leading zero if so.
+		 * 
+		 * @param {number} n Number to pad.
+		 */
+		const pad = function ( n ) { return 10 > n ? `0${ n }` : n; };
+			
+		let days = Math.floor( milliseconds / msPerDay ),
 			hours = Math.floor( ( milliseconds - days * msPerDay ) / msPerHour ),
 			minutes = Math.round( ( milliseconds - days * msPerDay - hours * msPerHour ) / msPerMinute ),
-			seconds = Math.round( ( milliseconds - days * msPerDay - hours * msPerHour - minutes * msPerMinute ) / msPerSecond ),
-			pad = function ( n ) { return 10 > n ? '0' + n : n; };
+			seconds = Math.round( ( milliseconds - days * msPerDay - hours * msPerHour - minutes * msPerMinute ) / msPerSecond );
 
 		if ( 0 > seconds ) {
 			minutes --;

@@ -2,15 +2,13 @@
 
 const path = require( 'path' );
 const BrowserSyncPlugin = require( 'browser-sync-webpack-plugin' );
-const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 
 const componentName = 'countdown-timer';
 
 module.exports = {
 	mode: process.env.NODE_ENV ? 'development' : 'production',
 	entry: [
-		'./src/index.js',
-		'./src/style.css'
+		'./src/index.js'
 	],
 	output: {
 		path: path.resolve( __dirname, './dist' ),
@@ -32,15 +30,6 @@ module.exports = {
 				use: {
 					loader: 'babel-loader'
 				}
-			},
-			{
-				test: /\.css$/,
-				exclude: /(node_modules)/,
-				use: [
-					MiniCssExtractPlugin.loader,
-					'css-loader',
-					'postcss-loader'
-				]
 			}
 		]
 	},
@@ -57,9 +46,6 @@ module.exports = {
 			files: ['index.html', 'dist/**/*'],
 			stream: { once: true },
 			injectChanges: true
-		} ),
-		new MiniCssExtractPlugin( {
-			filename: `${ componentName }.css`,
-		} ),
+		} )
 	],
 };
