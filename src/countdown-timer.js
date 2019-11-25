@@ -22,7 +22,16 @@ export default class CountdownTimer {
 		
 		const defaults = {
 			onCreate: null,
-			onTick: null
+			onTick: null,
+			compact: false,
+			hideZeroValues: true,
+			allowNegative: true,
+			allowedIntervals: {
+				days: true,
+				hours: true,
+				minutes: true,
+				seconds: true
+			}
 		};
 
 		this.settings = Object.assign( {}, defaults, options );
@@ -106,21 +115,32 @@ export default class CountdownTimer {
 		secondsLabel.className = 'seconds-label';
 		secondsLabel.textContent = 'seconds';
 
-		fragment.appendChild( days );
-		fragment.append( ' ' );
-		fragment.appendChild( daysLabel );
-		fragment.append( ' ' );
-		fragment.appendChild( hours );
-		fragment.append( ' ' );
-		fragment.appendChild( hoursLabel );
-		fragment.append( ' ' );
-		fragment.appendChild( minutes );
-		fragment.append( ' ' );
-		fragment.appendChild( minutesLabel );
-		fragment.append( ' ' );
-		fragment.appendChild( seconds );
-		fragment.append( ' ' );
-		fragment.appendChild( secondsLabel );
+		if ( this.settings.allowedIntervals.days ) {
+			fragment.appendChild( days );
+			fragment.append( ' ' );
+			fragment.appendChild( daysLabel );
+			fragment.append( ' ' );
+		}
+
+		if ( this.settings.allowedIntervals.hours ) {
+			fragment.appendChild( hours );
+			fragment.append( ' ' );
+			fragment.appendChild( hoursLabel );
+			fragment.append( ' ' );
+		}
+
+		if ( this.settings.allowedIntervals.minutes ) {
+			fragment.appendChild( minutes );
+			fragment.append( ' ' );
+			fragment.appendChild( minutesLabel );
+			fragment.append( ' ' );
+		}
+
+		if ( this.settings.allowedIntervals.seconds ) {
+			fragment.appendChild( seconds );
+			fragment.append( ' ' );
+			fragment.appendChild( secondsLabel );
+		}
 
 		timer.appendChild( fragment );
 
@@ -148,7 +168,7 @@ export default class CountdownTimer {
 			const parsedDiff = this.formatDiff( diff );
 			const [ d, h, m, s ] = parsedDiff;
 
-			if ( 0 >= diff ) {
+			if ( 0 >= diff && ! this.settings.allowNegative ) {
 				days.textContent = '00';
 				hours.textContent = '00';
 				minutes.textContent = '00';
@@ -161,17 +181,10 @@ export default class CountdownTimer {
 				return;
 			}
 
-			days.textContent = d;
-			days.setAttribute( 'aria-label', `${ d } days` );
-
-			hours.textContent = h;
-			hours.setAttribute( 'aria-label', `${ h } hours` );
-
-			minutes.textContent = m;
-			minutes.setAttribute( 'aria-label', `${ m } minutes` );
-
-			seconds.textContent = s;
-			seconds.setAttribute( 'aria-label', `${ s } seconds` );
+			this.updateDisplay( timer, days, d, 'days' );
+			this.updateDisplay( timer, hours, h, 'hours' );
+			this.updateDisplay( timer, minutes, m, 'minutes' );
+			this.updateDisplay( timer, seconds, s, 'seconds' );
 
 			/**
 			 * Called after the current countdown timer updates.
@@ -182,6 +195,7 @@ export default class CountdownTimer {
 					element: timer,
 					time,
 					remaining: diff,
+					isNegative: 0 > diff,
 					days: parseInt( d ),
 					hours: parseInt( h ),
 					minutes: parseInt( m ),
@@ -196,9 +210,9 @@ export default class CountdownTimer {
 	}
 
 	/**
-	 * Calculate the number of days, hours, minutes, and seconds from the given milleseconds.
+	 * Calculate the number of days, hours, minutes, and seconds from the given milliseconds.
 	 * 
-	 * @param {number} milliseconds Number of milleseconds remaining in the countdown.
+	 * @param {number} milliseconds Number of milliseconds remaining in the countdown.
 	 */
 	formatDiff( milliseconds ) {
 		const msPerDay = 24 * 60 * 60 * 1000;
@@ -211,12 +225,12 @@ export default class CountdownTimer {
 		 * 
 		 * @param {number} n Number to pad.
 		 */
-		const pad = function ( n ) { return 10 > n ? `0${ n }` : n; };
+		const pad = function ( n ) { return 10 > n && 0 <= n ? `0${ n }` : n; };
 			
-		let days = Math.floor( milliseconds / msPerDay ),
-			hours = Math.floor( ( milliseconds - days * msPerDay ) / msPerHour ),
-			minutes = Math.round( ( milliseconds - days * msPerDay - hours * msPerHour ) / msPerMinute ),
-			seconds = Math.round( ( milliseconds - days * msPerDay - hours * msPerHour - minutes * msPerMinute ) / msPerSecond );
+		let days = Math.floor( Math.abs( milliseconds ) / msPerDay ),
+			hours = Math.floor( ( Math.abs( milliseconds ) - days * msPerDay ) / msPerHour ),
+			minutes = Math.round( ( Math.abs( milliseconds ) - days * msPerDay - hours * msPerHour ) / msPerMinute ),
+			seconds = Math.round( ( Math.abs( milliseconds ) - days * msPerDay - hours * msPerHour - minutes * msPerMinute ) / msPerSecond );
 
 		if ( 0 > seconds ) {
 			minutes --;
@@ -234,5 +248,21 @@ export default class CountdownTimer {
 		}
 
 		return [ pad( days ), pad( hours ), pad( minutes ), pad( seconds ) ];
+	}
+
+	/**
+	 * Update the display of the given interval element, or remove it if settings allow.
+	 * 
+	 * @param {object} timer    HTML element for this timer.
+	 * @param {object} interval HTML element for the element to update or remove.
+	 * @param {string} value    String value to display in the interval element.
+	 * @param {string} label    String value to display as the interval label.
+	 */
+	updateDisplay( timer, interval, value, label ) {
+		if ( timer.contains( interval ) ) {
+			// Otherwise, update the display.
+			interval.textContent = value;
+			interval.setAttribute( 'aria-label', `${ value } ${ label }` );
+		}
 	}
 }
