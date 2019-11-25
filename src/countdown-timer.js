@@ -178,7 +178,15 @@ export default class CountdownTimer {
 			 * @callback onTick
 			 */
 			if ( this.settings.onTick && 'function' === typeof this.settings.onTick ) {
-				this.settings.onTick.call( this, timer );
+				this.settings.onTick.call( this, {
+					element: timer,
+					time,
+					remaining: diff,
+					days: parseInt( d ),
+					hours: parseInt( h ),
+					minutes: parseInt( m ),
+					seconds: parseInt( s )
+				} );
 			}
 		};
 
