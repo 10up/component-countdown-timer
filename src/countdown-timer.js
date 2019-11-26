@@ -249,6 +249,8 @@ export default class CountdownTimer {
 					time,
 					remaining: diff,
 					isNegative,
+					years: parseInt( y ),
+					weeks: parseInt( w ),
 					days: parseInt( d ),
 					hours: parseInt( h ),
 					minutes: parseInt( m ),
