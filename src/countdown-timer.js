@@ -165,7 +165,7 @@ export default class CountdownTimer {
 			const now = new Date().getTime();
 			const diff = time - now;
 			const isNegative = 0 > diff;
-			const parsedDiff = this.formatDiff( diff, isNegative );
+			const parsedDiff = this.formatDiff( diff, time );
 			const [ y, w, d, h, m, s ] = parsedDiff;
 			let highestNonzero;
 
@@ -243,16 +243,21 @@ export default class CountdownTimer {
 	/**
 	 * Calculate the number of days, hours, minutes, and seconds from the given milliseconds.
 	 * 
-	 * @param {number}  milliseconds Number of milliseconds remaining in the countdown.
-	 * @param {boolean} isNegative   Whether or not the time diff is negative (event happened in the past).
+	 * @param {number} milliseconds Number of milliseconds remaining in the countdown.
+	 * @param {number} time         Time we're counting to, in milliseconds.
 	 */
-	formatDiff( milliseconds, isNegative ) {
+	formatDiff( milliseconds, time ) {
 		const msPerSecond = 1000;
 		const msPerMinute = 60 * msPerSecond;
 		const msPerHour = 60 * msPerMinute;
 		const msPerDay = 24 * msPerHour;
 		const msPerWeek = 7 * msPerDay;
 		const msPerYear = 365 * msPerDay;
+		const isNegative = 0 > milliseconds;
+		const now = new Date();
+		const currentMonth = now.getMonth();
+		const finalMonth = new Date( time ).getMonth();
+		const spansFebruary = isNegative ? 1 < currentMonth && 1 >= finalMonth : 1 >= currentMonth && 1 < finalMonth;
 
 		let years = Math.floor( Math.abs( milliseconds ) / msPerYear ),
 			weeks = Math.floor( Math.abs( milliseconds ) % msPerYear / msPerWeek ),
@@ -262,14 +267,25 @@ export default class CountdownTimer {
 			minutes = Math.floor( Math.abs( milliseconds ) % msPerHour / msPerMinute ),
 			seconds = Math.floor( Math.abs( milliseconds ) % msPerMinute / msPerSecond );
 
-		// For every leap year in the diff, add a day.
-		if ( 0 < years ) {
-			let yearToCheck = new Date().getFullYear();
+		/* 
+		 * Add days to accommodate leap years (which are 366 days, not 365).
+		 */
+		if ( 0 < years || spansFebruary ) {
+			let yearToCheck = now.getFullYear();
 			const finalYear = isNegative ? yearToCheck - years : yearToCheck + years;
+			let checkYear = isNegative ? yearToCheck >= finalYear : yearToCheck <= finalYear;
 
-			while ( yearToCheck !== finalYear ) {
+			// Loop through each year between now and the end time.
+			while ( checkYear ) {
+				checkYear = isNegative ? yearToCheck >= finalYear : yearToCheck <= finalYear;
+
+				// If the year we're checking is a leap year.
 				if ( this.isLeapYear( yearToCheck ) ) {
-					days ++;
+
+					// If it's an in-between year, or the diff spans February, add a day.
+					if ( yearToCheck !== finalYear || spansFebruary ) {
+						days ++;
+					}
 				}
 
 				if ( 7 <= days ) {
