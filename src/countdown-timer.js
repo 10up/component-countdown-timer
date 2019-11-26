@@ -26,13 +26,35 @@ export default class CountdownTimer {
 			compact: false,
 			allowNegative: true,
 			padValues: false,
-			allowedIntervals: {
-				years: true,
-				weeks: true,
-				days: true,
-				hours: true,
-				minutes: true,
-				seconds: true
+			years: {
+				allowed: true,
+				singular: 'year',
+				plural: 'years'
+			},
+			weeks: {
+				allowed: true,
+				singular: 'week',
+				plural: 'weeks'
+			},
+			days: {
+				allowed: true,
+				singular: 'day',
+				plural: 'days'
+			},
+			hours: {
+				allowed: true,
+				singular: 'hour',
+				plural: 'hours'
+			},
+			minutes: {
+				allowed: true,
+				singular: 'minute',
+				plural: 'minutes'
+			},
+			seconds: {
+				allowed: true,
+				singular: 'second',
+				plural: 'seconds'
 			}
 		};
 
@@ -112,32 +134,32 @@ export default class CountdownTimer {
 		seconds.className = 'seconds';
 		seconds.setAttribute( 'aria-label', 'seconds' );
 
-		if ( this.settings.allowedIntervals.years ) {
+		if ( this.settings.years.allowed ) {
 			fragment.appendChild( years );
 			fragment.append( ' ' );
 		}
 
-		if ( this.settings.allowedIntervals.weeks ) {
+		if ( this.settings.weeks.allowed ) {
 			fragment.appendChild( weeks );
 			fragment.append( ' ' );
 		}
 
-		if ( this.settings.allowedIntervals.days ) {
+		if ( this.settings.days.allowed ) {
 			fragment.appendChild( days );
 			fragment.append( ' ' );
 		}
 
-		if ( this.settings.allowedIntervals.hours ) {
+		if ( this.settings.hours.allowed ) {
 			fragment.appendChild( hours );
 			fragment.append( ' ' );
 		}
 
-		if ( this.settings.allowedIntervals.minutes ) {
+		if ( this.settings.minutes.allowed ) {
 			fragment.appendChild( minutes );
 			fragment.append( ' ' );
 		}
 
-		if ( this.settings.allowedIntervals.seconds ) {
+		if ( this.settings.seconds.allowed ) {
 			fragment.appendChild( seconds );
 		}
 
@@ -195,12 +217,12 @@ export default class CountdownTimer {
 
 			// If negative values are not allowed and the time is in the past, set everything to show 0.
 			if ( 0 >= diff && ! this.settings.allowNegative ) {
-				this.updateDisplay( timer, years, 0, 'year' );
-				this.updateDisplay( timer, weeks, 0, 'week' );
-				this.updateDisplay( timer, days, 0, 'day' );
-				this.updateDisplay( timer, hours, 0, 'hour' );
-				this.updateDisplay( timer, minutes, 0, 'minute' );
-				this.updateDisplay( timer, seconds, 0, 'second' );
+				this.updateDisplay( timer, years, 0, this.settings.years );
+				this.updateDisplay( timer, weeks, 0, this.settings.weeks );
+				this.updateDisplay( timer, days, 0, this.settings.days );
+				this.updateDisplay( timer, hours, 0, this.settings.hours );
+				this.updateDisplay( timer, minutes, 0, this.settings.minutes );
+				this.updateDisplay( timer, seconds, 0, this.settings.seconds );
 
 				// If the timer is stopped, stop ticking.
 				if ( repeat ) {
@@ -210,12 +232,12 @@ export default class CountdownTimer {
 				return;
 			}
 
-			this.updateDisplay( timer, years, y, 'year' );
-			this.updateDisplay( timer, weeks, w, 'week' );
-			this.updateDisplay( timer, days, d, 'day' );
-			this.updateDisplay( timer, hours, h, 'hour' );
-			this.updateDisplay( timer, minutes, m, 'minute' );
-			this.updateDisplay( timer, seconds, s, 'second' );
+			this.updateDisplay( timer, years, y, this.settings.years );
+			this.updateDisplay( timer, weeks, w, this.settings.weeks );
+			this.updateDisplay( timer, days, d, this.settings.days );
+			this.updateDisplay( timer, hours, h, this.settings.hours );
+			this.updateDisplay( timer, minutes, m, this.settings.minutes );
+			this.updateDisplay( timer, seconds, s, this.settings.seconds );
 
 			/**
 			 * Called after the current countdown timer updates.
@@ -320,10 +342,10 @@ export default class CountdownTimer {
 	updateDisplay( timer, interval, value, label ) {
 		if ( timer.contains( interval ) ) {
 			// Otherwise, update the display.
-			const s = 1 < value || 0 === value ? 's' : '';
+			const units = 1 < value || 0 === value ? label.plural : label.singular;
 
-			interval.textContent = `${ value } ${ label }${ s }`;
-			interval.setAttribute( 'aria-label', `${ value } ${ label }${ s }` );
+			interval.textContent = `${ value } ${ units }`;
+			interval.setAttribute( 'aria-label', `${ value } ${ units }` );
 		}
 	}
 
