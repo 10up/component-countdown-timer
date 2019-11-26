@@ -27,6 +27,7 @@ export default class CountdownTimer {
 			allowNegative: true,
 			padValues: false,
 			allowedIntervals: {
+				years: true,
 				weeks: true,
 				days: true,
 				hours: true,
@@ -85,12 +86,16 @@ export default class CountdownTimer {
 	 */
 	createElements( timer, time ) {
 		const span = document.createElement( 'span' );
+		const years = span.cloneNode();
 		const weeks = span.cloneNode();
 		const days = span.cloneNode();
 		const hours = span.cloneNode();
 		const minutes = span.cloneNode();
 		const seconds = span.cloneNode();
 		const fragment = document.createDocumentFragment();
+
+		years.className = 'years';
+		years.setAttribute( 'aria-label', 'years' );
 
 		weeks.className = 'weeks';
 		weeks.setAttribute( 'aria-label', 'weeks' );
@@ -106,6 +111,11 @@ export default class CountdownTimer {
 
 		seconds.className = 'seconds';
 		seconds.setAttribute( 'aria-label', 'seconds' );
+
+		if ( this.settings.allowedIntervals.years ) {
+			fragment.appendChild( years );
+			fragment.append( ' ' );
+		}
 
 		if ( this.settings.allowedIntervals.weeks ) {
 			fragment.appendChild( weeks );
@@ -133,18 +143,15 @@ export default class CountdownTimer {
 
 		timer.appendChild( fragment );
 
-		this.startTimer( timer, time, [ weeks, days, hours, minutes, seconds ] );
+		this.startTimer( timer, time, [ years, weeks, days, hours, minutes, seconds ] );
 	}
 
 	/**
 	 * Start updating the display for the given timer elements.
 	 * 
-	 * @param {object} timer   HTML element for this timer.
-	 * @param {number} time    Time to count down to in UNIX time.
-	 * @param {object} days    HTML element to display remaining days.
-	 * @param {object} hours   HTML element to display remaining hours.
-	 * @param {object} minutes HTML element to display remaining minutes.
-	 * @param {object} seconds HTML element to display remaining seconds.
+	 * @param {object} timer     HTML element for this timer.
+	 * @param {number} time      Time to count down to in UNIX time.
+	 * @param {array}  intervals Array of HTML elements for intervals to display.
 	 */
 	startTimer( timer, time, intervals ) {
 
@@ -152,14 +159,12 @@ export default class CountdownTimer {
 		 * Update the timer display every second.
 		 */
 		const updateTime = () => {
-			const [ weeks, days, hours, minutes, seconds ] = intervals;
+			const [ years, weeks, days, hours, minutes, seconds ] = intervals;
 			const now = new Date().getTime();
 			const diff = time - now;
 			const parsedDiff = this.formatDiff( diff );
-			const [ w, d, h, m, s ] = parsedDiff;
+			const [ y, w, d, h, m, s ] = parsedDiff;
 			let highestNonzero;
-
-			console.log( w, weeks );
 
 			// If compact option is enabled.
 			if ( this.settings.compact ) {
@@ -199,11 +204,12 @@ export default class CountdownTimer {
 				return;
 			}
 
-			this.updateDisplay( timer, weeks, w, 'week', highestNonzero );
-			this.updateDisplay( timer, days, d, 'day', highestNonzero );
-			this.updateDisplay( timer, hours, h, 'hour', highestNonzero );
-			this.updateDisplay( timer, minutes, m, 'minute', highestNonzero );
-			this.updateDisplay( timer, seconds, s, 'second', highestNonzero );
+			this.updateDisplay( timer, years, y, 'year' );
+			this.updateDisplay( timer, weeks, w, 'week' );
+			this.updateDisplay( timer, days, d, 'day' );
+			this.updateDisplay( timer, hours, h, 'hour' );
+			this.updateDisplay( timer, minutes, m, 'minute' );
+			this.updateDisplay( timer, seconds, s, 'second' );
 
 			/**
 			 * Called after the current countdown timer updates.
@@ -234,6 +240,8 @@ export default class CountdownTimer {
 	 * @param {number} milliseconds Number of milliseconds remaining in the countdown.
 	 */
 	formatDiff( milliseconds ) {
+		const msPerYear = 52 * 7 * 24 * 60 * 60 * 1000;
+		const msPerWeek = 7 * 24 * 60 * 60 * 1000;
 		const msPerDay = 24 * 60 * 60 * 1000;
 		const msPerHour = 60 * 60 * 1000;
 		const msPerMinute = 60 * 1000;
@@ -252,27 +260,14 @@ export default class CountdownTimer {
 			}
 		};
 
-		let days = Math.floor( Math.abs( milliseconds ) / msPerDay ),
-			hours = Math.floor( ( Math.abs( milliseconds ) - days * msPerDay ) / msPerHour ),
-			minutes = Math.round( ( Math.abs( milliseconds ) - days * msPerDay - hours * msPerHour ) / msPerMinute ),
-			seconds = Math.round( ( Math.abs( milliseconds ) - days * msPerDay - hours * msPerHour - minutes * msPerMinute ) / msPerSecond );
+		const years = Math.floor( Math.abs( milliseconds ) / msPerYear ),
+			weeks = Math.floor( Math.abs( milliseconds ) % msPerYear / msPerWeek ), 
+			days =  Math.floor( Math.abs( milliseconds ) % msPerWeek / msPerDay ),
+			hours = Math.floor( Math.abs( milliseconds ) % msPerDay / msPerHour ),
+			minutes = Math.floor( Math.abs( milliseconds ) % msPerHour / msPerMinute ),
+			seconds = Math.floor( Math.abs( milliseconds ) % msPerMinute / msPerSecond );
 
-		if ( 0 > seconds ) {
-			minutes --;
-			seconds = seconds + 60;
-		}
-
-		if ( 60 === minutes ) {
-			hours ++;
-			minutes = 0;
-		}
-
-		if ( 24 === hours ) {
-			days ++;
-			hours = 0;
-		}
-
-		return [ 0, pad( days ), pad( hours ), pad( minutes ), pad( seconds ) ];
+		return [ pad( years ), pad( weeks ), pad( days ), pad( hours ), pad( minutes ), pad( seconds ) ];
 	}
 
 	/**
@@ -282,7 +277,6 @@ export default class CountdownTimer {
 	 * @param {object} interval       HTML element for the element to update or remove.
 	 * @param {string} value          String value to display in the interval element.
 	 * @param {string} label          String value to display as the interval label.
-	 * @param {number} highestNonzero Index of highest non-zero value in parsedDiff array.
 	 */
 	updateDisplay( timer, interval, value, label ) {
 		if ( timer.contains( interval ) ) {
