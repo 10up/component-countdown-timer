@@ -157,12 +157,15 @@ export default class CountdownTimer {
 
 		/**
 		 * Update the timer display every second.
+		 * This is scoped inside startTimer so that it only has access to
+		 * the setInterval function that's created within this scope.
 		 */
 		const updateTime = () => {
 			const [ years, weeks, days, hours, minutes, seconds ] = intervals;
 			const now = new Date().getTime();
 			const diff = time - now;
-			const parsedDiff = this.formatDiff( diff );
+			const isNegative = 0 > diff;
+			const parsedDiff = this.formatDiff( diff, isNegative );
 			const [ y, w, d, h, m, s ] = parsedDiff;
 			let highestNonzero;
 
@@ -192,13 +195,16 @@ export default class CountdownTimer {
 
 			// If negative values are not allowed and the time is in the past, set everything to show 0.
 			if ( 0 >= diff && ! this.settings.allowNegative ) {
-				days.textContent = '00';
-				hours.textContent = '00';
-				minutes.textContent = '00';
-				seconds.textContent = '00';
+				this.updateDisplay( timer, years, 0, 'year' );
+				this.updateDisplay( timer, weeks, 0, 'week' );
+				this.updateDisplay( timer, days, 0, 'day' );
+				this.updateDisplay( timer, hours, 0, 'hour' );
+				this.updateDisplay( timer, minutes, 0, 'minute' );
+				this.updateDisplay( timer, seconds, 0, 'second' );
 
-				if ( interval ) {
-					window.clearInterval( interval );
+				// If the timer is stopped, stop ticking.
+				if ( repeat ) {
+					window.clearInterval( repeat );
 				}
 
 				return;
@@ -220,7 +226,7 @@ export default class CountdownTimer {
 					element: timer,
 					time,
 					remaining: diff,
-					isNegative: 0 > diff,
+					isNegative,
 					days: parseInt( d ),
 					hours: parseInt( h ),
 					minutes: parseInt( m ),
@@ -231,43 +237,60 @@ export default class CountdownTimer {
 
 		updateTime();
 
-		const interval = window.setInterval( updateTime, 1000 );
+		const repeat = window.setInterval( updateTime, 1000 );
 	}
 
 	/**
 	 * Calculate the number of days, hours, minutes, and seconds from the given milliseconds.
 	 * 
-	 * @param {number} milliseconds Number of milliseconds remaining in the countdown.
+	 * @param {number}  milliseconds Number of milliseconds remaining in the countdown.
+	 * @param {boolean} isNegative   Whether or not the time diff is negative (event happened in the past).
 	 */
-	formatDiff( milliseconds ) {
-		const msPerYear = 52 * 7 * 24 * 60 * 60 * 1000;
-		const msPerWeek = 7 * 24 * 60 * 60 * 1000;
-		const msPerDay = 24 * 60 * 60 * 1000;
-		const msPerHour = 60 * 60 * 1000;
-		const msPerMinute = 60 * 1000;
+	formatDiff( milliseconds, isNegative ) {
 		const msPerSecond = 1000;
-		
-		/**
-		 * Check if given number `n` is less than 10, and pad with a leading zero if so.
-		 * 
-		 * @param {number} n Number to pad.
-		 */
-		const pad = ( n ) => {
-			if ( this.settings.padValues ) {
-				return 10 > n ? `0${ n }` : n;
-			} else {
-				return n;
-			}
-		};
+		const msPerMinute = 60 * msPerSecond;
+		const msPerHour = 60 * msPerMinute;
+		const msPerDay = 24 * msPerHour;
+		const msPerWeek = 7 * msPerDay;
+		const msPerYear = 365 * msPerDay;
 
-		const years = Math.floor( Math.abs( milliseconds ) / msPerYear ),
-			weeks = Math.floor( Math.abs( milliseconds ) % msPerYear / msPerWeek ), 
-			days =  Math.floor( Math.abs( milliseconds ) % msPerWeek / msPerDay ),
-			hours = Math.floor( Math.abs( milliseconds ) % msPerDay / msPerHour ),
+		let years = Math.floor( Math.abs( milliseconds ) / msPerYear ),
+			weeks = Math.floor( Math.abs( milliseconds ) % msPerYear / msPerWeek ),
+			days = Math.floor( Math.abs( milliseconds ) % msPerWeek / msPerDay );
+
+		const hours = Math.floor( Math.abs( milliseconds ) % msPerDay / msPerHour ),
 			minutes = Math.floor( Math.abs( milliseconds ) % msPerHour / msPerMinute ),
 			seconds = Math.floor( Math.abs( milliseconds ) % msPerMinute / msPerSecond );
 
-		return [ pad( years ), pad( weeks ), pad( days ), pad( hours ), pad( minutes ), pad( seconds ) ];
+		// For every leap year in the diff, add a day.
+		if ( 0 < years ) {
+			let yearToCheck = new Date().getFullYear();
+			const finalYear = isNegative ? yearToCheck - years : yearToCheck + years;
+
+			while ( yearToCheck !== finalYear ) {
+				if ( this.isLeapYear( yearToCheck ) ) {
+					days ++;
+				}
+
+				if ( 7 <= days ) {
+					days = 0;
+					weeks ++;
+				}
+
+				if ( 52 <= weeks ) {
+					weeks = 0;
+					years ++;
+				}
+
+				if ( isNegative ) {
+					yearToCheck --;
+				} else {
+					yearToCheck ++;
+				}
+			}
+		}
+
+		return [ this.pad( years ), this.pad( weeks ), this.pad( days ), this.pad( hours ), this.pad( minutes ), this.pad( seconds ) ];
 	}
 
 	/**
@@ -286,5 +309,27 @@ export default class CountdownTimer {
 			interval.textContent = `${ value } ${ label }${ s }`;
 			interval.setAttribute( 'aria-label', `${ value } ${ label }${ s }` );
 		}
+	}
+
+	/**
+	 * Check if given number `n` is less than 10, and pad with a leading zero if so.
+	 * 
+	 * @param {number} n Number to pad.
+	 */
+	pad( n ) {
+		if ( this.settings.padValues ) {
+			return 10 > n ? `0${ n }` : n;
+		} else {
+			return n;
+		}
+	}
+
+	/**
+	 * Check whether the given year is a leap year.
+	 * 
+	 * @param {number} Year Year to check.
+	 */
+	isLeapYear( year ) {
+		return 0 === year % 100 ? 0 === year % 400 : 0 === year % 4;
 	}
 }
