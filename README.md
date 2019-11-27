@@ -12,36 +12,66 @@
 
 ## API
 
- This component accepts two arguments, the selector for the component container and an object containing optional callbacks.
+ This component accepts two arguments, the selector for the component container and an object containing optional settings and callbacks.
+
+### Settings
+
+ - `compact`: Boolean. If `true`, the timer will display only the highest non-zero interval value. This lets you display a more approximate time, e.g. `3 days`. The timer will continue to tick once per second and the interval shown will change as necessary. Default value: `false`
+ - `allowNegative`: Boolean. If `true`, the timer will continue to count up once the given `time` has passed. This lets you display the time elapsed since a given `time`. Default value: `false`
+ - `padValues`: Boolean. If `true`, single-digit numbers displayed by the timer will be padded with a leading zero. Default value: `false`
+ - Interval settings: You may provide settings for each supported interval (`years`, `weeks`, `days`, `hours`, `minutes` and `seconds`). You can give each interval property an object with the following options:
+   * `allowed`: Boolean. If `false`, this interval will not be displayed in the timer under any circumstances. Useful if you only need to show approximate values (e.g. "3 days, 12 hours since the last error") or if you know the time you're counting to/from falls within a certain period and you won't need to show larger intervals like years or weeks. Note that this won't affect the calculation of time remaining/elapsed, so if you disallow relevant intervals, the time displayed may appear inaccurate to users. Default value: `true`, so that unless `compact` is enabled, all intervals are shown, even if zero.
+   * `singular`: String. Allows you to override the default singular label for the interval. Useful if you need to show the timer in a different language, or if you don't want any labels to appear alongside the numbers. Default value: English singular form of the interval.
+   * `singular`: String. Allows you to override the default plural label for the interval. Useful if you need to show the timer in a different language, or if you don't want any labels to appear alongside the numbers. Default value: English plural form of the interval.
 
 ### Callbacks
 
- - `onCreate`: Called after the component is initialized on page load
- - `onTick`: Called each time the component updates its time (approximately once per second). This callback is called with a single argument that represents the HTML element of the timer component that called it.
+ - `onCreate`: Called once per component instance after the instance is initialized on page load. Called with a single argument containing the following properties: `element` (the top-level HTML element of the timer which invoked the callback) and `time` (the time this timer is counting to/from, in UNIX format).
+ - `onEnd`: Called once per component instance when the timer reaches zero (if counting toward a future time). Called with a single argument containing the following properties: `element` (the top-level HTML element of the timer which invoked the callback) and `time` (the time this timer is counting to/from, in UNIX format). Note that this callback will never be called if the given time is in the past.
+ - `onTick`: Called each time a component instance updates its time (approximately once per second). Called with a single argument, an object that contains the following properties related to the timer instance that called it:
+
+ ```js
+ {
+	element,    // {object}  The top-level HTML element of the timer which invoked the callback.
+	time,       // {number}  The time this timer is counting to/from, in UNIX format.
+	diff,       // {number}  The number of milliseconds between `time` and the moment `onTick` was called.
+	isNegative, // {boolean} If `true`, once the current time surpasses the given `time`, the timer will continue to count up (showing the time elapsed since `time`). If `false`, once the current time surpasses the given `time`, the timer will stop counting and will display zero for all intervals.
+	years,      // {number}  Number of years in `diff`.
+	weeks,      // {number}  Number of weeks in `diff`.
+	days,       // {number}  Number of days in `diff`.
+	hours,      // {number}  Number of hours in `diff`.
+	minutes,    // {number}  Number of minutes in `diff`.
+	seconds     // {number}  Number of seconds in `diff`.
+}
+ ```
 
 ## Usage
 
-Create an empty `time` element and give it a `datetime` attribute with a [valid date string](https://developer.mozilla.org/en-US/docs/Web/HTML/Date_and_time_formats) to count down to. Make sure the element is targetable with a selector that can be passed to the JavaScript. See the **JavaScript** section below on how to init. 
+Create a `time` element and give it a `datetime` attribute with a [valid date string](https://developer.mozilla.org/en-US/docs/Web/HTML/Date_and_time_formats). This date string will be used to count to (if it's in the future), or from (if it's in the past, and the `allowNegative` setting is enabled). Make sure the element is targetable with a selector that can be passed to the JavaScript. Refer to the **JavaScript** section below on how to initialize.
 
-You can create multiple instances on the same page—each will count down independently, as long as they can be targeted by the same selector and each contains a valid `datetime` attribute.
+For accessibility purposes, we strongly recommend adding some fallback content inside the `time` element which can be shown if the JS is unable to run. This content will be replaced by the countdown elements once the JS is initialized. Also make sure to give your `time` element a [`role="timer"` attribute](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/ARIA_timer_role).
 
-Note that the remaining time displayed by the component will depend on the local time zone of the browser rendering it. You can control the behavior of the component by providing a date string that factors in time zone:
+You can create multiple instances on the same page—each will count down independently, as long as they can be targeted by some selector and each contains a valid `datetime` attribute. To create multiple timer instances with shared settings, give the `time` elements the same selector and invoke them once using that selector in JS. To create multiple timer instances with different settings, give the `time` elements different selectors and invoke them separately in JS.
 
- - If you provide a `datetime` in a local time zone, the component calculates the remaining time based on the user's local time zone. This is useful if you want to count down to an event relative to local time zone.
+Note that the time displayed by the component will depend on the local time zone of the browser rendering it. You can control the behavior of the component by providing a date string that considers time zone:
+
+ - If you provide a `datetime` without any time zone specification, the component calculates the remaining time based on the user's local time zone. This is useful if you want to count down to an event relative to local time zone.
    * For example, to count down to midnight on New Year's Day in the year 2046 in the user's local time zone: `2046-01-01T00:00:00`
  - If you provide a `datetime` in a specific time zone, the component which will factor in the difference between the specified time zone and the user's local time zone. This is useful if you want to count down to an event that occurs at an exact time in a specific time zone.
    * For example, to count down to midnight on New Year's Day in the year 2046 in Eastern Standard Time (EST): `2046-01-01T00:00:00-04:00`
- - If you provide a `datetime` in Greenwich Mean Time (GMT), the component will factor in the difference between GMT and the user's local time zone. This is useful if you want to count down to an exact time in GMT.
-   * For example, to count down to midnight on New Year's Day in the year 2046 in GMT: `2046-01-01T00:00:00Z`
+ - If you provide a `datetime` in UTC, the component will factor in the difference between UTC and the user's local time zone. This is useful if you want to count down to an exact time in UTC.
+   * For example, to count down to midnight on New Year's Day in the year 2046 in UTC: `2046-01-01T00:00:00Z`
 
-If the component does not contain a `datetime` attribute, the `datetime` attribute is not a valid date string, or the date string is a date in the past, the component will display `00 : 00 : 00 : 00`.
+If the component does not contain a `datetime` attribute, the `datetime` attribute is not a valid date string, or the date string is a date in the past, the component will display zeroes for all intervals.
 
 ### Markup
 
  This is the markup template expected by the component. To count down to midnight on New Year's Day in the year 2046 in GMT:
 
  ```html
-<time class="countdown-timer" datetime="2046-01-01T00:00:00Z"></time>
+<time class="countdown-timer" datetime="2046-01-01T00:00:00Z" role="timer">
+	<!-- Some fallback content, perhaps the date string itself or a message to users or machines that can't view this component with JS. -->
+</time>
  ```
 
 ### CSS
@@ -63,14 +93,8 @@ If the component does not contain a `datetime` attribute, the `datetime` attribu
 ```javascript
 import CountdownTimer from '@10up/countdown-timer';
 
-component( '.countdown-timer', {
-	onCreate: function() {
-		console.log( 'onCreate callback' );
-	},
-
-	onTick: function() {
-		console.log( 'onTick callback' );
-	}
+CountdownTimer( '.countdown-timer', {
+	// Settings and callback properties go here.
 } );
 ```
 
@@ -80,13 +104,7 @@ Include the `countdown-timer.js` file from the `dist/` directory and access the 
 
 ```javascript
 let countdownTimer = new TenUp.CountdownTimer( '.countdown-timer', {
-	onCreate: function() {
-		console.log( 'onCreate callback' );
-	},
-
-	onTick: function() {
-		console.log( 'onTick callback' );
-	}
+	// Settings and callback properties go here.
 } );
 ```
 

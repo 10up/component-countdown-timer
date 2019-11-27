@@ -14,17 +14,16 @@ export default class CountdownTimer {
 	/**
 	 * 
 	 * @param {string}   element          Selector for target elements to receive a countdown timer.
-	 * @param {object}   options          (Optional) Object containing options.
-	 * @param {function} options.onCreate (Optional) Callback function to invoke after all countdown timers on the page have been created.
-	 * @param {function} options.onTick   (Optional) Callback function to invoke each time a countdown timer updates its time.
+	 * @param {object}   options          (Optional) Object containing options. See `defaults` option for possible properties/values.
 	 */
 	constructor( element, options = {} ) {
-		
+
 		const defaults = {
 			onCreate: null,
+			onEnd: null,
 			onTick: null,
 			compact: false,
-			allowNegative: true,
+			allowNegative: false,
 			padValues: false,
 			years: {
 				allowed: true,
@@ -70,14 +69,6 @@ export default class CountdownTimer {
 		this.$timers.forEach( ( timer ) => {
 			this.createTimer( timer );
 		} );
-
-		/**
-		 * Called after all countdown timers are initialized.
-		 * @callback onCreate
-		 */
-		if ( this.settings.onCreate && 'function' === typeof this.settings.onCreate ) {
-			this.settings.onCreate.call();
-		}
 	}
 
 	/**
@@ -95,6 +86,17 @@ export default class CountdownTimer {
 		}
 
 		timer.textContent = '';
+
+		/**
+		 * Called after a countdown timer is initialized.
+		 * @callback onCreate
+		 */
+		if ( this.settings.onCreate && 'function' === typeof this.settings.onCreate ) {
+			this.settings.onCreate.call( this, {
+				element: timer,
+				time
+			} );
+		}
 
 		this.createElements( timer, time );
 	}
@@ -229,6 +231,17 @@ export default class CountdownTimer {
 					window.clearInterval( repeat );
 				}
 
+				/**
+				 * Called after this countdown timer has reached zero.
+				 * @callback onEnd
+				 */
+				if ( this.settings.onEnd && 'function' === typeof this.settings.onEnd ) {
+					this.settings.onEnd.call( this, {
+						element: timer,
+						time
+					} );
+				}
+
 				return;
 			}
 
@@ -247,7 +260,7 @@ export default class CountdownTimer {
 				this.settings.onTick.call( this, {
 					element: timer,
 					time,
-					remaining: diff,
+					diff,
 					isNegative,
 					years: parseInt( y ),
 					weeks: parseInt( w ),
@@ -334,7 +347,7 @@ export default class CountdownTimer {
 	}
 
 	/**
-	 * Update the display of the given interval element, or remove it if settings allow.
+	 * Update the display of the given interval element.
 	 * 
 	 * @param {object} timer          HTML element for this timer.
 	 * @param {object} interval       HTML element for the element to update or remove.
