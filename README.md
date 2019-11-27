@@ -14,12 +14,27 @@
 
  This component accepts two arguments, the selector for the component container and an object containing optional settings and callbacks.
 
+### Supported Intervals
+
+The timer can display values for the following time intervals:
+
+ - `years`
+ - `weeks`
+ - `days`
+ - `hours`
+ - `minutes`
+ - `seconds`
+
+#### Why no months?
+
+Since various months can contain different numbers of days, a month is not an exact unit of time, so it's not as useful for counting toward or away from a specific point in time. All supported intervals contain an exact number of seconds. The one exception is `years`, which can contain either 365 or 366 days. The component will factor this into its calculations by adding an extra day for each leap year as necessary.
+
 ### Settings
 
  - `compact`: Boolean. If `true`, the timer will display only the highest non-zero interval value. This lets you display a more approximate time, e.g. `3 days`. The timer will continue to tick once per second and the interval shown will change as necessary. Default value: `false`
  - `allowNegative`: Boolean. If `true`, the timer will continue to count up once the given `time` has passed. This lets you display the time elapsed since a given `time`. Default value: `false`
  - `padValues`: Boolean. If `true`, single-digit numbers displayed by the timer will be padded with a leading zero. Default value: `false`
- - Interval settings: You may provide settings for each supported interval (`years`, `weeks`, `days`, `hours`, `minutes` and `seconds`). You can give each interval property an object with the following options:
+ - Interval settings: You may provide settings for each supported interval. You can give each interval property an object with the following options:
    * `allowed`: Boolean. If `false`, this interval will not be displayed in the timer under any circumstances. Useful if you only need to show approximate values (e.g. "3 days, 12 hours since the last error") or if you know the time you're counting to/from falls within a certain period and you won't need to show larger intervals like years or weeks. Note that this won't affect the calculation of time remaining/elapsed, so if you disallow relevant intervals, the time displayed may appear inaccurate to users. Default value: `true`, so that unless `compact` is enabled, all intervals are shown, even if zero.
    * `singular`: String. Allows you to override the default singular label for the interval. Useful if you need to show the timer in a different language, or if you don't want any labels to appear alongside the numbers. Default value: English singular form of the interval.
    * `singular`: String. Allows you to override the default plural label for the interval. Useful if you need to show the timer in a different language, or if you don't want any labels to appear alongside the numbers. Default value: English plural form of the interval.
