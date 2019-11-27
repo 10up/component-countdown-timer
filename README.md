@@ -50,7 +50,7 @@ Since various months can contain different numbers of days, a month is not an ex
 	element,    // {object}  The top-level HTML element of the timer which invoked the callback.
 	time,       // {number}  The time this timer is counting to/from, in UNIX format.
 	diff,       // {number}  The number of milliseconds between `time` and the moment `onTick` was called.
-	isNegative, // {boolean} If `true`, once the current time surpasses the given `time`, the timer will continue to count up (showing the time elapsed since `time`). If `false`, once the current time surpasses the given `time`, the timer will stop counting and will display zero for all intervals.
+	isNegative, // {boolean} If `true`, `time` is in the past and `diff` is a negative number.
 	years,      // {number}  Number of years in `diff`.
 	weeks,      // {number}  Number of weeks in `diff`.
 	days,       // {number}  Number of days in `diff`.
