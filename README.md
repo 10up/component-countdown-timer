@@ -68,7 +68,9 @@ For accessibility purposes, we strongly recommend adding some fallback content i
 
 You can create multiple instances on the same page—each will count down independently, as long as they can be targeted by some selector and each contains a valid `datetime` attribute. To create multiple timer instances with shared settings, give the `time` elements the same selector and invoke them once using that selector in JS. To create multiple timer instances with different settings, give the `time` elements different selectors and invoke them separately in JS.
 
-Note that the time displayed by the component will depend on the local time zone of the browser rendering it. You can control the behavior of the component by providing a date string that considers time zone:
+### Dealing with Time Zones
+
+The time displayed by the component will depend on the local time zone of the browser rendering it. You can control the behavior of the component by providing a date string that considers time zone:
 
  - If you provide a `datetime` without any time zone specification, the component calculates the remaining time based on the user's local time zone. This is useful if you want to count down to an event relative to local time zone.
    * For example, to count down to midnight on New Year's Day in the year 2046 in the user's local time zone: `2046-01-01T00:00:00`
@@ -81,7 +83,7 @@ If the component does not contain a `datetime` attribute, the `datetime` attribu
 
 ### Markup
 
- This is the markup template expected by the component. To count down to midnight on New Year's Day in the year 2046 in GMT:
+ This is the markup template expected by the component. To count down to midnight on New Year's Day in the year 2046 in UTC:
 
  ```html
 <time class="countdown-timer" datetime="2046-01-01T00:00:00Z" role="timer">
