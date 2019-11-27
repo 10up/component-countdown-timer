@@ -62,7 +62,7 @@ Since various months can contain different numbers of days, a month is not an ex
 
 ## Usage
 
-Create a `time` element and give it a `datetime` attribute with a [valid date string](https://developer.mozilla.org/en-US/docs/Web/HTML/Date_and_time_formats). This date string will be used to count to (if it's in the future), or from (if it's in the past, and the `allowNegative` setting is enabled). Make sure the element is targetable with a selector that can be passed to the JavaScript. Refer to the **JavaScript** section below on how to initialize.
+Create a `time` wrapper element and give it a `datetime` attribute with a [valid date string](https://developer.mozilla.org/en-US/docs/Web/HTML/Date_and_time_formats). This date string will be used to count to (if it's in the future), or from (if it's in the past, and the `allowNegative` setting is enabled). Make sure the element is targetable with a selector that can be passed to the JavaScript. Refer to the **JavaScript** section below on how to initialize.
 
 For accessibility purposes, we strongly recommend adding some fallback content inside the `time` element which can be shown if the JS is unable to run. This content will be replaced by the countdown elements once the JS is initialized. Also make sure to give your `time` element a [`role="timer"` attribute](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/ARIA_timer_role).
 
@@ -91,13 +91,7 @@ If the component does not contain a `datetime` attribute, the `datetime` attribu
 
 ### CSS
 
- The styles can be imported into your existing codebase by using PostCSS imports, or by including the standalone CSS file in your project.
-
-#### PostCSS Imports
- `@import '@10up/countdown-timer';`
-
-#### Standalone
- Include the `countdown-timer.css` file from the `dist/` directory.
+There is no CSS included with this component. You may target individual interval elements within the component by class name: `.years`, `.weeks`, `.days`, `.hours`, `.minutes`, or `.seconds`. All interval elements are `span` elements and are top-level children of the `time` wrapper element.
 
 ### JavaScript
 
