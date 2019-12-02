@@ -37,7 +37,7 @@ Since various months can contain different numbers of days, a month is not an ex
  - Interval settings: You may provide settings for each supported interval. You can give each interval property an object with the following options:
    * `allowed`: Boolean. If `false`, this interval will not be displayed in the timer under any circumstances. Useful if you only need to show approximate values (e.g. "3 days, 12 hours since the last error") or if you know the time you're counting to/from falls within a certain period and you won't need to show larger intervals like years or weeks. Note that this won't affect the calculation of time remaining/elapsed, so if you disallow relevant intervals, the time displayed may appear inaccurate to users. Default value: `true`, so that unless `compact` is enabled, all intervals are shown, even if zero.
    * `singular`: String. Allows you to override the default singular label for the interval. Useful if you need to show the timer in a different language, or if you don't want any labels to appear alongside the numbers. Default value: English singular form of the interval.
-   * `singular`: String. Allows you to override the default plural label for the interval. Useful if you need to show the timer in a different language, or if you don't want any labels to appear alongside the numbers. Default value: English plural form of the interval.
+   * `plural`: String. Allows you to override the default plural label for the interval. Useful if you need to show the timer in a different language, or if you don't want any labels to appear alongside the numbers. Default value: English plural form of the interval.
 
 ### Callbacks
 
