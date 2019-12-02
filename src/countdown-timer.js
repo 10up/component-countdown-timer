@@ -80,11 +80,24 @@ export default class CountdownTimer {
 	createTimer( timer ) {
 		let time = new Date( timer.getAttribute( 'datetime' ) ).getTime();
 
+		// Set role="timer" for assistive technologies, if not already set.
+		if ( 'timer' !== timer.getAttribute( 'role' ) ) {
+			timer.setAttribute( 'role', 'timer' );
+		}
+
+		// Set aria-atomic="true" so that when updated, the full time will always be spoken by assistive technologies.
+		timer.setAttribute( 'aria-atomic', 'true' );
+
+		// Set aria-live="polite" so that timer updates will be spoken aloud, but only when the user is idle.
+		timer.setAttribute( 'aria-live', 'polite' );
+
+		// Check for a valid date string in the `datetime` attribute.
 		if ( ! time || isNaN( time ) ) {
 			console.error( '10up Countdown Timer: Time not found. Each countdown timer must have a datetime attribute with a valid date string. See https://developer.mozilla.org/en-US/docs/Web/HTML/Date_and_time_formats for details on how to build a valid date string.' ); // eslint-disable-line
 			time = new Date().getTime();
 		}
 
+		// Clear fallback content.
 		timer.textContent = '';
 
 		/**
@@ -135,6 +148,7 @@ export default class CountdownTimer {
 
 		seconds.className = 'seconds';
 		seconds.setAttribute( 'aria-label', 'seconds' );
+		seconds.setAttribute( 'aria-hidden', 'true' ); // Seconds should not be spoken by assistive technologies unless it's the highest interval.
 
 		if ( this.settings.years.allowed ) {
 			fragment.appendChild( years );
@@ -193,28 +207,36 @@ export default class CountdownTimer {
 			const [ y, w, d, h, m, s ] = parsedDiff;
 			let highestNonzero;
 
+			// Find the highest non-zero value.
+			parsedDiff.find( ( remaining, index ) => {
+				if ( 0 < remaining ) {
+					highestNonzero = index;
+					return remaining;
+				} else if ( highestNonzero === undefined ) {
+
+					// If the value of this interval is zero and there are no larger non-zero intervals, hide it from assistive technologies.
+					intervals[index].setAttribute( 'aria-hidden', 'true' );
+				}
+			} );
+
+			// If seconds are the highest non-zero interval, unhide them from assitive technologies.
+			if ( highestNonzero === intervals.length - 1 ) {
+				intervals[highestNonzero].setAttribute( 'aria-hidden', 'false' );
+			}
+
 			// If compact option is enabled.
-			if ( this.settings.compact ) {
-				// Find the highest non-zero value.
-				parsedDiff.find( ( remaining, index ) => {
-					if ( 0 < remaining ) {
-						highestNonzero = index;
-						return remaining;
-					}
-				} );
+			if ( this.settings.compact && undefined !== highestNonzero ) {
 
 				// Hide all elements except the highest non-zero value.
-				if ( undefined !== highestNonzero ) {
-					intervals.forEach( ( interval, index ) => {
-						if ( highestNonzero === index ) {
-							if ( ! timer.contains( interval ) ) {
-								timer.appendChild( interval );
-							}
-						} else {
-							timer.contains( interval ) && timer.removeChild( interval );
+				intervals.forEach( ( interval, index ) => {
+					if ( highestNonzero === index ) {
+						if ( ! timer.contains( interval ) ) {
+							timer.appendChild( interval );
 						}
-					} );
-				}
+					} else {
+						timer.contains( interval ) && timer.removeChild( interval );
+					}
+				} );
 			}
 
 			// If negative values are not allowed and the time is in the past, set everything to show 0.
