@@ -66,7 +66,7 @@ Since various months can contain different numbers of days, a month is not an ex
 
 Create a `time` wrapper element and give it a `datetime` attribute with a [valid date string](https://developer.mozilla.org/en-US/docs/Web/HTML/Date_and_time_formats). This date string will be used to count to (if it's in the future), or from (if it's in the past, and the `allowNegative` setting is enabled). Make sure the element is targetable with a selector that can be passed to the JavaScript. Refer to the **JavaScript** section below on how to initialize.
 
-For accessibility purposes, we strongly recommend adding some fallback content inside the `time` element which can be shown if the JS is unable to run. This content will be replaced by the countdown elements once the JS is initialized. Also make sure to give your `time` element a [`role="timer"` attribute](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/ARIA_timer_role).
+For accessibility purposes, we strongly recommend adding some fallback content inside the `time` element which can be shown if the JS is unable to run. This content will be replaced by the countdown elements once the JS is initialized.
 
 You can create multiple instances on the same page—each will count down independently, as long as they can be targeted by some selector and each contains a valid `datetime` attribute. To create multiple timer instances with shared settings, give the `time` elements the same selector and invoke them once using that selector in JS. To create multiple timer instances with different settings, give the `time` elements different selectors and invoke them separately in JS.
 
