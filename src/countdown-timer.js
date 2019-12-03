@@ -25,6 +25,7 @@ export default class CountdownTimer {
 			compact: false,
 			allowNegative: false,
 			padValues: false,
+			separator: ', ',
 			years: {
 				allowed: true,
 				singular: 'year',
@@ -162,27 +163,27 @@ export default class CountdownTimer {
 
 		if ( this.settings.years.allowed ) {
 			fragment.appendChild( years );
-			fragment.appendChild( document.createTextNode( ' ' ) );
+			fragment.appendChild( document.createTextNode( this.settings.separator ) );
 		}
 
 		if ( this.settings.weeks.allowed ) {
 			fragment.appendChild( weeks );
-			fragment.appendChild( document.createTextNode( ' ' ) );
+			fragment.appendChild( document.createTextNode( this.settings.separator ) );
 		}
 
 		if ( this.settings.days.allowed ) {
 			fragment.appendChild( days );
-			fragment.appendChild( document.createTextNode( ' ' ) );
+			fragment.appendChild( document.createTextNode( this.settings.separator ) );
 		}
 
 		if ( this.settings.hours.allowed ) {
 			fragment.appendChild( hours );
-			fragment.appendChild( document.createTextNode( ' ' ) );
+			fragment.appendChild( document.createTextNode( this.settings.separator ) );
 		}
 
 		if ( this.settings.minutes.allowed ) {
 			fragment.appendChild( minutes );
-			fragment.appendChild( document.createTextNode( ' ' ) );
+			fragment.appendChild( document.createTextNode( this.settings.separator ) );
 		}
 
 		if ( this.settings.seconds.allowed ) {
