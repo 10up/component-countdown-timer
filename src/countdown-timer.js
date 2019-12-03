@@ -247,14 +247,20 @@ export default class CountdownTimer {
 			// If compact option is enabled.
 			if ( this.settings.compact && undefined !== highestNonzero ) {
 
+				// If there's a separator character, remove it.
+				if ( interval.previousSibling && interval.previousSibling === this.settings.separator ) {
+					timer.removeChild( interval.previousSibling );
+				}
+
 				// Hide all elements except the highest non-zero value.
 				intervals.forEach( ( interval, index ) => {
 					if ( highestNonzero === index ) {
+
 						if ( ! timer.contains( interval ) ) {
 							timer.appendChild( interval );
 						}
-					} else {
-						timer.contains( interval ) && timer.removeChild( interval );
+					} else if ( timer.contains( interval ) ) {
+						timer.removeChild( interval );
 					}
 				} );
 			}
