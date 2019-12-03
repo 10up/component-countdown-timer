@@ -153,27 +153,27 @@ export default class CountdownTimer {
 
 		if ( this.settings.years.allowed ) {
 			fragment.appendChild( years );
-			fragment.append( ' ' );
+			fragment.appendChild( document.createTextNode( ' ' ) );
 		}
 
 		if ( this.settings.weeks.allowed ) {
 			fragment.appendChild( weeks );
-			fragment.append( ' ' );
+			fragment.appendChild( document.createTextNode( ' ' ) );
 		}
 
 		if ( this.settings.days.allowed ) {
 			fragment.appendChild( days );
-			fragment.append( ' ' );
+			fragment.appendChild( document.createTextNode( ' ' ) );
 		}
 
 		if ( this.settings.hours.allowed ) {
 			fragment.appendChild( hours );
-			fragment.append( ' ' );
+			fragment.appendChild( document.createTextNode( ' ' ) );
 		}
 
 		if ( this.settings.minutes.allowed ) {
 			fragment.appendChild( minutes );
-			fragment.append( ' ' );
+			fragment.appendChild( document.createTextNode( ' ' ) );
 		}
 
 		if ( this.settings.seconds.allowed ) {
