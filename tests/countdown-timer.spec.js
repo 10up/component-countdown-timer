@@ -61,6 +61,10 @@ describe( 'Accessibility Tests: Countdown Timer', () => {
 
 		// Check the class name for each top-level child element of each timer container
 		timers.forEach( children => {
+
+			// Each timer should have six child elements, one for each interval.
+			expect( children.length ).toEqual( 6 );
+
 			children.forEach( ( child, index ) => {
 				switch( index ) {
 					case 0:

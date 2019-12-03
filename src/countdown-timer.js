@@ -88,8 +88,14 @@ export default class CountdownTimer {
 			timer.setAttribute( 'role', 'timer' );
 		}
 
+		// Ensure timer is tabbable, by default.
 		if ( ! timer.getAttribute( 'tabindex' ) ) {
 			timer.setAttribute( 'tabindex', 0 );
+		}
+
+		// Give the timer a name, if it lacks one.
+		if ( ! timer.getAttribute( 'aria-label' ) ) {
+			timer.setAttribute( 'aria-label', 'Countdown timer' );
 		}
 
 		// Set aria-atomic="true" so that when updated, the full time will always be spoken by assistive technologies.
