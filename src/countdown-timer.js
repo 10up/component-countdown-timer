@@ -88,9 +88,6 @@ export default class CountdownTimer {
 		// Set aria-atomic="true" so that when updated, the full time will always be spoken by assistive technologies.
 		timer.setAttribute( 'aria-atomic', 'true' );
 
-		// Set aria-live="polite" so that timer updates will be spoken aloud, but only when the user is idle.
-		timer.setAttribute( 'aria-live', 'polite' );
-
 		// Check for a valid date string in the `datetime` attribute.
 		if ( ! time || isNaN( time ) ) {
 			console.error( '10up Countdown Timer: Time not found. Each countdown timer must have a datetime attribute with a valid date string. See https://developer.mozilla.org/en-US/docs/Web/HTML/Date_and_time_formats for details on how to build a valid date string.' ); // eslint-disable-line
@@ -221,7 +218,16 @@ export default class CountdownTimer {
 
 			// If seconds are the highest non-zero interval, unhide them from assitive technologies.
 			if ( highestNonzero === intervals.length - 1 ) {
+				timer.setAttribute( 'aria-live', 'polite' );
 				intervals[highestNonzero].setAttribute( 'aria-hidden', 'false' );
+			} else {
+
+				// Only speak timer contents aloud once per minute.
+				if ( 0 === parsedDiff[5] ) {
+					timer.setAttribute( 'aria-live', 'polite' );
+				} else {
+					timer.setAttribute( 'aria-live', 'off' );
+				}
 			}
 
 			// If compact option is enabled.
