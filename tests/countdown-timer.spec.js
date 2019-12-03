@@ -55,12 +55,11 @@ describe( 'Accessibility Tests: Countdown Timer', () => {
 		const timers = await page.$$eval( '.tenup-countdown-timer', el => {
 			return el.map( x => {
 				const children = Array.from( x.children );
-				const childAttrs = children.map( child => child.className );
-
-				return childAttrs;
+				return children.map( child => child.className );
 			 } );
 		} );
 
+		// Check the class name for each top-level child element of each timer container
 		timers.forEach( children => {
 			children.forEach( ( child, index ) => {
 				switch( index ) {
@@ -85,6 +84,23 @@ describe( 'Accessibility Tests: Countdown Timer', () => {
 				}
 			} );
 		} )
+	} );
+
+	test( 'Keyboard accessibility of timers', async () => {
+
+		// Visit the page in headless Chrome
+		await page.goto( APP );
+		let accessibilityTree;
+
+		// Tab into the UI
+		await page.keyboard.press( 'Tab' );
+
+		// Enter the content
+		await page.keyboard.press( 'Tab' );
+		accessibilityTree = await page.accessibility.snapshot();
+
+		// If the timer is tabbable, we should be able to see its children after tabbing into it.
+		expect( accessibilityTree.children ).toBeDefined();
 	} );
 } );
 
