@@ -88,7 +88,7 @@ If the component does not contain a `datetime` attribute, the `datetime` attribu
  This is the markup template expected by the component. To count down to midnight on New Year's Day in the year 2046 in UTC:
 
  ```html
-<time class="countdown-timer" datetime="2046-01-01T00:00:00Z" role="timer">
+<time class="countdown-timer" datetime="2046-01-01T00:00:00Z">
 	<!-- Some fallback content, perhaps the date string itself or a message to users or machines that can't view this component with JS. -->
 </time>
  ```
