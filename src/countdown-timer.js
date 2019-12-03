@@ -26,6 +26,7 @@ export default class CountdownTimer {
 			allowNegative: false,
 			padValues: false,
 			separator: ', ',
+			showZeroes: false,
 			years: {
 				allowed: true,
 				singular: 'year',
@@ -227,6 +228,15 @@ export default class CountdownTimer {
 
 					// If the value of this interval is zero and there are no larger non-zero intervals, hide it from assistive technologies.
 					intervals[index].setAttribute( 'aria-hidden', 'true' );
+
+					// If showZeroes is not enabled, remove leading zero-value intervals.
+					if ( ! this.settings.showZeroes && timer.contains( intervals[index] ) ) {						
+						if ( intervals[index].nextSibling ) {
+							timer.removeChild( intervals[index].nextSibling );
+						}
+
+						timer.removeChild( intervals[index] );
+					}
 				}
 			} );
 
@@ -247,13 +257,14 @@ export default class CountdownTimer {
 			// If compact option is enabled.
 			if ( this.settings.compact && undefined !== highestNonzero ) {
 
-				// If there's a separator character, remove it.
-				if ( interval.previousSibling && interval.previousSibling === this.settings.separator ) {
-					timer.removeChild( interval.previousSibling );
-				}
-
 				// Hide all elements except the highest non-zero value.
 				intervals.forEach( ( interval, index ) => {
+
+					// If there's a separator character, remove it.
+					if ( interval.previousSibling ) {
+						timer.removeChild( interval.previousSibling );
+					}
+
 					if ( highestNonzero === index ) {
 
 						if ( ! timer.contains( interval ) ) {
