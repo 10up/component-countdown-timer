@@ -85,6 +85,10 @@ export default class CountdownTimer {
 			timer.setAttribute( 'role', 'timer' );
 		}
 
+		if ( ! timer.getAttribute( 'tabindex' ) ) {
+			timer.setAttribute( 'tabindex', 0 );
+		}
+
 		// Set aria-atomic="true" so that when updated, the full time will always be spoken by assistive technologies.
 		timer.setAttribute( 'aria-atomic', 'true' );
 
