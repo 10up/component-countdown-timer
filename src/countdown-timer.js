@@ -13,8 +13,8 @@ export default class CountdownTimer {
 
 	/**
 	 * 
-	 * @param {string}   element          Selector for target elements to receive a countdown timer.
-	 * @param {object}   options          (Optional) Object containing options. See `defaults` option for possible properties/values.
+	 * @param {string} element Selector for target elements to receive a countdown timer.
+	 * @param {object} options (Optional) Object containing options. See `defaults` option for possible properties/values.
 	 */
 	constructor( element, options = {} ) {
 
@@ -230,7 +230,7 @@ export default class CountdownTimer {
 					intervals[index].setAttribute( 'aria-hidden', 'true' );
 
 					// If showZeroes is not enabled, remove leading zero-value intervals.
-					if ( ! this.settings.showZeroes && timer.contains( intervals[index] ) ) {						
+					if ( ! this.settings.showZeroes && timer.contains( intervals[index] ) ) {
 						if ( intervals[index].nextSibling ) {
 							timer.removeChild( intervals[index].nextSibling );
 						}
@@ -363,9 +363,7 @@ export default class CountdownTimer {
 			minutes = Math.floor( Math.abs( milliseconds ) % msPerHour / msPerMinute ),
 			seconds = Math.floor( Math.abs( milliseconds ) % msPerMinute / msPerSecond );
 
-		/* 
-		 * Add days to accommodate leap years (which are 366 days, not 365).
-		 */
+		// Add days to accommodate leap years (which are 366 days, not 365).
 		if ( 0 < years || spansFebruary ) {
 			let yearToCheck = now.getFullYear();
 			const finalYear = isNegative ? yearToCheck - years : yearToCheck + years;
@@ -408,10 +406,10 @@ export default class CountdownTimer {
 	/**
 	 * Update the display of the given interval element.
 	 * 
-	 * @param {object} timer          HTML element for this timer.
-	 * @param {object} interval       HTML element for the element to update or remove.
-	 * @param {string} value          String value to display in the interval element.
-	 * @param {string} label          String value to display as the interval label.
+	 * @param {object} timer    HTML element for this timer.
+	 * @param {object} interval HTML element for the element to update or remove.
+	 * @param {string} value    String value to display in the interval element.
+	 * @param {object} label    Object containing interval label data.
 	 */
 	updateDisplay( timer, interval, value, label ) {
 		if ( timer.contains( interval ) ) {
