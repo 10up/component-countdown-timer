@@ -25,6 +25,8 @@ export default class CountdownTimer {
 			compact: false,
 			allowNegative: false,
 			padValues: false,
+			separator: ', ',
+			showZeroes: false,
 			years: {
 				allowed: true,
 				singular: 'year',
@@ -80,13 +82,22 @@ export default class CountdownTimer {
 	createTimer( timer ) {
 		let time = new Date( timer.getAttribute( 'datetime' ) ).getTime();
 
+		// Add a standardized class name for E2E tests.
+		timer.classList.add( 'tenup-countdown-timer' );
+
 		// Set role="timer" for assistive technologies, if not already set.
 		if ( 'timer' !== timer.getAttribute( 'role' ) ) {
 			timer.setAttribute( 'role', 'timer' );
 		}
 
+		// Ensure timer is tabbable, by default.
 		if ( ! timer.getAttribute( 'tabindex' ) ) {
 			timer.setAttribute( 'tabindex', 0 );
+		}
+
+		// Give the timer a name, if it lacks one.
+		if ( ! timer.getAttribute( 'aria-label' ) ) {
+			timer.setAttribute( 'aria-label', 'Countdown timer' );
 		}
 
 		// Set aria-atomic="true" so that when updated, the full time will always be spoken by assistive technologies.
@@ -153,27 +164,27 @@ export default class CountdownTimer {
 
 		if ( this.settings.years.allowed ) {
 			fragment.appendChild( years );
-			fragment.appendChild( document.createTextNode( ' ' ) );
+			fragment.appendChild( document.createTextNode( this.settings.separator ) );
 		}
 
 		if ( this.settings.weeks.allowed ) {
 			fragment.appendChild( weeks );
-			fragment.appendChild( document.createTextNode( ' ' ) );
+			fragment.appendChild( document.createTextNode( this.settings.separator ) );
 		}
 
 		if ( this.settings.days.allowed ) {
 			fragment.appendChild( days );
-			fragment.appendChild( document.createTextNode( ' ' ) );
+			fragment.appendChild( document.createTextNode( this.settings.separator ) );
 		}
 
 		if ( this.settings.hours.allowed ) {
 			fragment.appendChild( hours );
-			fragment.appendChild( document.createTextNode( ' ' ) );
+			fragment.appendChild( document.createTextNode( this.settings.separator ) );
 		}
 
 		if ( this.settings.minutes.allowed ) {
 			fragment.appendChild( minutes );
-			fragment.appendChild( document.createTextNode( ' ' ) );
+			fragment.appendChild( document.createTextNode( this.settings.separator ) );
 		}
 
 		if ( this.settings.seconds.allowed ) {
@@ -217,6 +228,15 @@ export default class CountdownTimer {
 
 					// If the value of this interval is zero and there are no larger non-zero intervals, hide it from assistive technologies.
 					intervals[index].setAttribute( 'aria-hidden', 'true' );
+
+					// If showZeroes is not enabled, remove leading zero-value intervals.
+					if ( ! this.settings.showZeroes && timer.contains( intervals[index] ) ) {						
+						if ( intervals[index].nextSibling ) {
+							timer.removeChild( intervals[index].nextSibling );
+						}
+
+						timer.removeChild( intervals[index] );
+					}
 				}
 			} );
 
@@ -239,12 +259,19 @@ export default class CountdownTimer {
 
 				// Hide all elements except the highest non-zero value.
 				intervals.forEach( ( interval, index ) => {
+
+					// If there's a separator character, remove it.
+					if ( interval.previousSibling ) {
+						timer.removeChild( interval.previousSibling );
+					}
+
 					if ( highestNonzero === index ) {
+
 						if ( ! timer.contains( interval ) ) {
 							timer.appendChild( interval );
 						}
-					} else {
-						timer.contains( interval ) && timer.removeChild( interval );
+					} else if ( timer.contains( interval ) ) {
+						timer.removeChild( interval );
 					}
 				} );
 			}
