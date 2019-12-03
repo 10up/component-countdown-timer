@@ -80,6 +80,9 @@ export default class CountdownTimer {
 	createTimer( timer ) {
 		let time = new Date( timer.getAttribute( 'datetime' ) ).getTime();
 
+		// Add a standardized class name for E2E tests.
+		timer.classList.add( 'tenup-countdown-timer' );
+
 		// Set role="timer" for assistive technologies, if not already set.
 		if ( 'timer' !== timer.getAttribute( 'role' ) ) {
 			timer.setAttribute( 'role', 'timer' );
