@@ -1,6 +1,6 @@
 # 10up Countdown Timer component
 
-> A countdown timer component that displays the number of days, hours, minutes, and seconds remaining until the time specified in the component's `datetime` attribute.
+> A countdown timer component that displays the amount of time remaining until (or elapsed since) the time specified in the component's `datetime` attribute.
 
 ## Installation
 
