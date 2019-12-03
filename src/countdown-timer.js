@@ -5,9 +5,9 @@
  *
  * @description
  *
- * A description goes here.
+ * A countdown timer component that displays the amount of time remaining until (or elapsed since) the time specified in the component's `datetime` attribute.
  *
- * [Link to demo]{@link https://10up.github.io/wp-component-library/}
+ * [Link to demo]{@link https://10up.github.io/wp-component-library/component/countdown-timer/}
  */
 export default class CountdownTimer {
 
