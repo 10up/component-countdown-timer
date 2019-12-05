@@ -78,7 +78,7 @@ The time displayed by the component will depend on the local time zone of the br
    * For example, to count down to midnight on New Year's Day in the year 2046 in the user's local time zone: `2046-01-01T00:00:00`
  - If you provide a `datetime` in a specific time zone, the component which will factor in the difference between the specified time zone and the user's local time zone. This is useful if you want to count down to an event that occurs at an exact time in a specific time zone.
    * For example, to count down to midnight on New Year's Day in the year 2046 in Eastern Standard Time (EST): `2046-01-01T00:00:00-04:00`
- - If you provide a `datetime` in UTC, the component will factor in the difference between UTC and the user's local time zone. This is useful if you want to count down to an exact time in UTC.
+ - If you provide a `datetime` in UTC (with a `Z` suffix to denote UTC), the component will factor in the difference between UTC and the user's local time zone. This is useful if you want to count down to an exact time in UTC.
    * For example, to count down to midnight on New Year's Day in the year 2046 in UTC: `2046-01-01T00:00:00Z`
 
 If the component does not contain a `datetime` attribute, the `datetime` attribute is not a valid date string, or the date string is a date in the past, the component will display zeroes for all intervals.
@@ -88,7 +88,7 @@ If the component does not contain a `datetime` attribute, the `datetime` attribu
  This is the markup template expected by the component. To count down to midnight on New Year's Day in the year 2046 in UTC:
 
  ```html
-<time class="countdown-timer" datetime="2046-01-01T00:00:00Z">
+<time class="countdown-timer" datetime="2046-01-01T00:00:00">
 	<!-- Some fallback content, perhaps the date string itself or a message to users or machines that can't view this component with JS. -->
 </time>
  ```
@@ -106,7 +106,7 @@ There is no CSS included with this component. You may target individual interval
 ```javascript
 import CountdownTimer from '@10up/countdown-timer';
 
-CountdownTimer( '.countdown-timer', {
+new CountdownTimer( '.countdown-timer', {
 	// Settings and callback properties go here.
 } );
 ```
