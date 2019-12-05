@@ -347,56 +347,56 @@ export default class CountdownTimer {
 		const msPerMinute = 60 * msPerSecond;
 		const msPerHour = 60 * msPerMinute;
 		const msPerDay = 24 * msPerHour;
-		const msPerWeek = 7 * msPerDay;
-		const msPerYear = 365 * msPerDay;
 		const isNegative = 0 > milliseconds;
 		const now = new Date();
-		const currentMonth = now.getMonth();
-		const finalMonth = new Date( time ).getMonth();
-		const spansFebruary = isNegative ? 1 < currentMonth && 1 >= finalMonth : 1 >= currentMonth && 1 < finalMonth;
-
-		let years = Math.floor( Math.abs( milliseconds ) / msPerYear ),
-			weeks = Math.floor( Math.abs( milliseconds ) % msPerYear / msPerWeek ),
-			days = Math.floor( Math.abs( milliseconds ) % msPerWeek / msPerDay );
-
+		const finalYear = new Date( time ).getFullYear();
 		const hours = Math.floor( Math.abs( milliseconds ) % msPerDay / msPerHour ),
 			minutes = Math.floor( Math.abs( milliseconds ) % msPerHour / msPerMinute ),
 			seconds = Math.floor( Math.abs( milliseconds ) % msPerMinute / msPerSecond );
 
-		// Add days to accommodate leap years (which are 366 days, not 365).
-		if ( 0 < years || spansFebruary ) {
-			let yearToCheck = now.getFullYear();
-			const finalYear = isNegative ? yearToCheck - years : yearToCheck + years;
-			let checkYear = isNegative ? yearToCheck >= finalYear : yearToCheck <= finalYear;
+		let years = 0,
+			weeks = 0,
+			days = Math.floor( Math.abs( milliseconds ) / msPerDay ),
+			yearToCheck = now.getFullYear(),
+			checkYear = yearToCheck !== finalYear;
 
-			// Loop through each year between now and the end time.
-			while ( checkYear ) {
-				checkYear = isNegative ? yearToCheck >= finalYear : yearToCheck <= finalYear;
+		/**
+		 * Because years are not a constant number of milliseconds, we have to calculate from the number of days.
+		 * Loop through each year in the diff to determine whether it's a leap year (366 days instead of 365).
+		 */
+		while ( checkYear && 365 <= days ) {
+			years ++;
 
-				// If the year we're checking is a leap year.
-				if ( this.isLeapYear( yearToCheck ) ) {
+			if ( this.isLeapYear( yearToCheck ) ) {
+				days -= 366;
+			} else {
+				days -= 365;
+			}
 
-					// If it's an in-between year, or the diff spans February, add a day.
-					if ( yearToCheck !== finalYear || spansFebruary ) {
-						days ++;
-					}
-				}
+			if ( isNegative ) {
+				yearToCheck --;
+			} else {
+				yearToCheck ++;
+			}
 
-				if ( 7 <= days ) {
-					days = 0;
-					weeks ++;
-				}
+			checkYear = yearToCheck !== finalYear;
+		}
 
-				if ( 52 <= weeks ) {
-					weeks = 0;
-					years ++;
-				}
+		/**
+		 * Now that we know the total number of years in the diff, calculate the number of weeks left in the remainder.
+		 * This is easier than calculating years because a week is always exactly 7 days.
+		 */
+		while ( 7 <= days ) {
+			days -= 7;
+			weeks ++;
 
-				if ( isNegative ) {
-					yearToCheck --;
-				} else {
-					yearToCheck ++;
-				}
+			/**
+			 * If the number of weeks exceeds a year, add a year and reset week counter.
+			 * A year isn't *exactly* 52 weeks, but the difference within a year is small enough to ignore.
+			 */
+			if ( 52 <= weeks ) {
+				weeks = 0;
+				years ++;
 			}
 		}
 
