@@ -12,7 +12,7 @@
 export default class CountdownTimer {
 
 	/**
-	 * 
+	 *
 	 * @param {string} element Selector for target elements to receive a countdown timer.
 	 * @param {object} options (Optional) Object containing options. See `defaults` option for possible properties/values.
 	 */
@@ -75,7 +75,7 @@ export default class CountdownTimer {
 
 	/**
 	 * Set up a countdown timer.
-	 * 
+	 *
 	 * @param {object} timer HTML element for this timer.
 	 * @returns null
 	 */
@@ -128,7 +128,7 @@ export default class CountdownTimer {
 
 	/**
 	 * Create child elements for a tiemr.
-	 * 
+	 *
 	 * @param {object} timer HTML element for this timer.
 	 * @param {number} time  Time to count down to in UNIX time.
 	 * @returns void
@@ -198,7 +198,7 @@ export default class CountdownTimer {
 
 	/**
 	 * Start updating the display for the given timer elements.
-	 * 
+	 *
 	 * @param {object} timer     HTML element for this timer.
 	 * @param {number} time      Time to count down to in UNIX time.
 	 * @param {array}  intervals Array of HTML elements for intervals to display.
@@ -338,7 +338,7 @@ export default class CountdownTimer {
 
 	/**
 	 * Calculate the number of days, hours, minutes, and seconds from the given milliseconds.
-	 * 
+	 *
 	 * @param {number} milliseconds Number of milliseconds remaining in the countdown.
 	 * @param {number} time         Time we're counting to, in milliseconds.
 	 */
@@ -405,7 +405,7 @@ export default class CountdownTimer {
 
 	/**
 	 * Update the display of the given interval element.
-	 * 
+	 *
 	 * @param {object} timer    HTML element for this timer.
 	 * @param {object} interval HTML element for the element to update or remove.
 	 * @param {string} value    String value to display in the interval element.
@@ -423,7 +423,7 @@ export default class CountdownTimer {
 
 	/**
 	 * Check if given number `n` is less than 10, and pad with a leading zero if so.
-	 * 
+	 *
 	 * @param {number} n Number to pad.
 	 */
 	pad( n ) {
@@ -436,7 +436,7 @@ export default class CountdownTimer {
 
 	/**
 	 * Check whether the given year is a leap year.
-	 * 
+	 *
 	 * @param {number} Year Year to check.
 	 */
 	isLeapYear( year ) {
