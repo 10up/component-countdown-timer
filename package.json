@@ -9,7 +9,7 @@
     "start": "npm install && npm run build",
     "build": "webpack",
     "watch": "webpack --watch",
-    "test" : "jest"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
