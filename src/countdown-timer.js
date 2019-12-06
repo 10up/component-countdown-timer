@@ -224,7 +224,7 @@ export default class CountdownTimer {
 				if ( 0 < remaining ) {
 					highestNonzero = index;
 					return remaining;
-				} else if ( highestNonzero === undefined ) {
+				} else if ( highestNonzero === undefined && ! intervals[index].classList.contains ( 'seconds' ) ) {
 
 					// If the value of this interval is zero and there are no larger non-zero intervals, hide it from assistive technologies.
 					intervals[index].setAttribute( 'aria-hidden', 'true' );
@@ -254,14 +254,13 @@ export default class CountdownTimer {
 				}
 			}
 
-			// If compact option is enabled.
-			if ( this.settings.compact && undefined !== highestNonzero ) {
+			if ( undefined !== highestNonzero ) {
 
 				// Hide all elements except the highest non-zero value.
 				intervals.forEach( ( interval, index ) => {
 
 					// If there's a separator character, remove it.
-					if ( interval.previousSibling ) {
+					if ( this.settings.compact && interval.previousSibling ) {
 						timer.removeChild( interval.previousSibling );
 					}
 
@@ -270,7 +269,7 @@ export default class CountdownTimer {
 						if ( ! timer.contains( interval ) ) {
 							timer.appendChild( interval );
 						}
-					} else if ( timer.contains( interval ) ) {
+					} else if ( this.settings.compact && timer.contains( interval ) ) {
 						timer.removeChild( interval );
 					}
 				} );
