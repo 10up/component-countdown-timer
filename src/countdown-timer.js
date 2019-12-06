@@ -164,27 +164,42 @@ export default class CountdownTimer {
 
 		if ( this.settings.years.allowed ) {
 			fragment.appendChild( years );
-			fragment.appendChild( document.createTextNode( this.settings.separator ) );
+
+			if ( this.settings.weeks.allowed || this.settings.days.allowed || this.settings.hours.allowed || this.settings.minutes.allowed || this.settings.seconds.allowed ) {
+				fragment.appendChild( document.createTextNode( this.settings.separator ) );
+			}
 		}
 
 		if ( this.settings.weeks.allowed ) {
 			fragment.appendChild( weeks );
-			fragment.appendChild( document.createTextNode( this.settings.separator ) );
+
+			if ( this.settings.days.allowed || this.settings.hours.allowed || this.settings.minutes.allowed || this.settings.seconds.allowed ) {
+				fragment.appendChild( document.createTextNode( this.settings.separator ) );
+			}
 		}
 
 		if ( this.settings.days.allowed ) {
 			fragment.appendChild( days );
-			fragment.appendChild( document.createTextNode( this.settings.separator ) );
+
+			if ( this.settings.hours.allowed || this.settings.minutes.allowed || this.settings.seconds.allowed ) {
+				fragment.appendChild( document.createTextNode( this.settings.separator ) );
+			}
 		}
 
 		if ( this.settings.hours.allowed ) {
 			fragment.appendChild( hours );
-			fragment.appendChild( document.createTextNode( this.settings.separator ) );
+
+			if ( this.settings.minutes.allowed || this.settings.seconds.allowed ) {
+				fragment.appendChild( document.createTextNode( this.settings.separator ) );
+			}
 		}
 
 		if ( this.settings.minutes.allowed ) {
 			fragment.appendChild( minutes );
-			fragment.appendChild( document.createTextNode( this.settings.separator ) );
+
+			if ( this.settings.seconds.allowed ) {
+				fragment.appendChild( document.createTextNode( this.settings.separator ) );
+			}
 		}
 
 		if ( this.settings.seconds.allowed ) {
