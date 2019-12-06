@@ -61,7 +61,7 @@ export default class CountdownTimer {
 
 		this.settings = Object.assign( {}, defaults, options );
 
-		this.$timers = Array.prototype.slice.call( document.querySelectorAll( '.countdown-timer' ) );
+		this.$timers = Array.prototype.slice.call( document.querySelectorAll( element ) );
 
 		if ( ! element || 0 === this.$timers.length ) {
 			console.error( '10up Countdown Timer: Target not found. Please provide a valid target selector.' ); // eslint-disable-line
