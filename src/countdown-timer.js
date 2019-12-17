@@ -220,8 +220,11 @@ export default class CountdownTimer {
 	 */
 	startTimer( timer, time, intervals ) {
 
+		// If seconds won't ever be shown, save performance by ticking once per minute.
+		let delay = this.settings.seconds.allowed ? 1000 : 1000 * 60;
+
 		/**
-		 * Update the timer display every second.
+		 * Update the timer display.
 		 * This is scoped inside startTimer so that it only has access to
 		 * the setInterval function that's created within this scope.
 		 */
@@ -286,6 +289,15 @@ export default class CountdownTimer {
 						}
 					} else if ( this.settings.compact && timer.contains( interval ) ) {
 						timer.removeChild( interval );
+
+						/**
+						 * If we're counting up and seconds won't be shown anymore, save performance by ticking once per minute.
+						 * If we're counting down, we have to keep ticking once per second to maintain an accurante countdown
+						 * once we transition to seconds.
+						 */
+						if ( isNegative && interval.classList.contains ( 'seconds' ) ) {
+							delay = 1000 * 60;
+						}
 					}
 				} );
 			}
@@ -347,7 +359,7 @@ export default class CountdownTimer {
 
 		updateTime();
 
-		const repeat = window.setInterval( updateTime, 1000 );
+		const repeat = window.setInterval( updateTime, delay );
 	}
 
 	/**
