@@ -4,7 +4,6 @@
   "author": "10up",
   "description": "A countdown timer component.",
   "main": "./src/countdown-timer.js",
-  "style": "./dist/countdown-timer.css",
   "scripts": {
     "start": "npm install && npm run build",
     "build": "webpack",

@@ -31,8 +31,8 @@ Since various months can contain different numbers of days, a month is not an ex
 
 ### Settings
 
- - `compact`: Boolean. If `true`, the timer will display only the highest non-zero interval value. This lets you display a more approximate time, e.g. `3 days`. The timer will continue to tick once per second and the interval shown will change as necessary. Default value: `false`
  - `allowNegative`: Boolean. If `true`, the timer will continue to count up once the given `time` has passed. This lets you display the time elapsed since a given `time`. Default value: `false`
+ - `compact`: Boolean. If `true`, the timer will display only the highest non-zero interval value. This lets you display a more approximate time, e.g. `3 days`. The timer will continue to tick once per second and the interval shown will change as necessary. Default value: `false`
  - `padValues`: Boolean. If `true`, single-digit numbers displayed by the timer will be padded with a leading zero. Default value: `false`
  - `separator`: String. Define a string to be rendered between intervals. Default value: `, `
  - `showZeroes`: Boolean. If `true`, all intervals will be shown, even if zero and there are no higher non-zero intervals. Default value: `false`
