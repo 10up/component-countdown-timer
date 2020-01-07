@@ -85,7 +85,7 @@ If the component does not contain a `datetime` attribute, the `datetime` attribu
 
 ### Markup
 
- This is the markup template expected by the component. To count down to midnight on New Year's Day in the year 2046 in UTC:
+ This is the markup template expected by the component. To count down to midnight on New Year's Day in the year 2046 in your local time zone:
 
  ```html
 <time class="countdown-timer" datetime="2046-01-01T00:00:00">
