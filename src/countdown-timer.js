@@ -59,6 +59,26 @@ export default class CountdownTimer {
 			}
 		};
 
+		const intervals = [ 'years', 'weeks', 'days', 'hours', 'minutes', 'seconds' ];
+
+		// Guard against missing or invalid or missing properties in interval options.
+		intervals.forEach( interval => {
+			if ( options[interval] ) {
+				if ( false !== options[interval].allowed ) {
+					options[interval].allowed = defaults[interval].allowed;
+				}
+
+				if ( undefined === options[interval].singular ) {
+					options[interval].singular = defaults[interval].singular;
+				}
+
+				if ( undefined === options[interval].plural ) {
+					options[interval].plural = defaults[interval].plural;
+				}
+			}
+		} );
+
+		// Assign options to settings object.
 		this.settings = Object.assign( {}, defaults, options );
 
 		this.$timers = Array.prototype.slice.call( document.querySelectorAll( element ) );
