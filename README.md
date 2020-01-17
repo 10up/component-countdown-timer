@@ -8,7 +8,7 @@
  `npm install --save @10up/countdown-timer`
 
 ### Standalone
- Clone this repo and import `countdown-timer.js` and `countdown-timer.css` from the `dist/` directory.
+ Clone this repo and import `countdown-timer.js` from the `dist/` directory.
 
 ## API
 
