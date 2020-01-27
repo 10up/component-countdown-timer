@@ -59,6 +59,26 @@ export default class CountdownTimer {
 			}
 		};
 
+		const intervals = [ 'years', 'weeks', 'days', 'hours', 'minutes', 'seconds' ];
+
+		// Guard against missing or invalid or missing properties in interval options.
+		intervals.forEach( interval => {
+			if ( options[interval] ) {
+				if ( false !== options[interval].allowed ) {
+					options[interval].allowed = defaults[interval].allowed;
+				}
+
+				if ( undefined === options[interval].singular ) {
+					options[interval].singular = defaults[interval].singular;
+				}
+
+				if ( undefined === options[interval].plural ) {
+					options[interval].plural = defaults[interval].plural;
+				}
+			}
+		} );
+
+		// Assign options to settings object.
 		this.settings = Object.assign( {}, defaults, options );
 
 		this.$timers = Array.prototype.slice.call( document.querySelectorAll( element ) );
@@ -143,22 +163,22 @@ export default class CountdownTimer {
 		const seconds = span.cloneNode();
 		const fragment = document.createDocumentFragment();
 
-		years.className = 'years';
+		years.className = 'tenup-countdown-timer-years';
 		years.setAttribute( 'aria-label', 'years' );
 
-		weeks.className = 'weeks';
+		weeks.className = 'tenup-countdown-timer-weeks';
 		weeks.setAttribute( 'aria-label', 'weeks' );
 
-		days.className = 'days';
+		days.className = 'tenup-countdown-timer-days';
 		days.setAttribute( 'aria-label', 'days' );
 
-		hours.className = 'hours';
+		hours.className = 'tenup-countdown-timer-hours';
 		hours.setAttribute( 'aria-label', 'hours' );
 
-		minutes.className = 'minutes';
+		minutes.className = 'tenup-countdown-timer-minutes';
 		minutes.setAttribute( 'aria-label', 'minutes' );
 
-		seconds.className = 'seconds';
+		seconds.className = 'tenup-countdown-timer-seconds';
 		seconds.setAttribute( 'aria-label', 'seconds' );
 		seconds.setAttribute( 'aria-hidden', 'true' ); // Seconds should not be spoken by assistive technologies unless it's the highest interval.
 
@@ -242,7 +262,7 @@ export default class CountdownTimer {
 				if ( 0 < remaining ) {
 					highestNonzero = index;
 					return remaining;
-				} else if ( highestNonzero === undefined && ! intervals[index].classList.contains ( 'seconds' ) ) {
+				} else if ( highestNonzero === undefined && ! intervals[index].classList.contains ( 'tenup-countdown-timer-seconds' ) ) {
 
 					// If the value of this interval is zero and there are no larger non-zero intervals, hide it from assistive technologies.
 					intervals[index].setAttribute( 'aria-hidden', 'true' );
@@ -295,7 +315,7 @@ export default class CountdownTimer {
 						 * If we're counting down, we have to keep ticking once per second to maintain an accurante countdown
 						 * once we transition to seconds.
 						 */
-						if ( isNegative && interval.classList.contains ( 'seconds' ) ) {
+						if ( isNegative && interval.classList.contains ( 'tenup-countdown-timer-seconds' ) ) {
 							delay = 1000 * 60;
 						}
 					}

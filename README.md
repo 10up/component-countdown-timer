@@ -8,7 +8,7 @@
  `npm install --save @10up/countdown-timer`
 
 ### Standalone
- Clone this repo and import `countdown-timer.js` and `countdown-timer.css` from the `dist/` directory.
+ Clone this repo and import `countdown-timer.js` from the `dist/` directory.
 
 ## API
 
@@ -95,7 +95,7 @@ If the component does not contain a `datetime` attribute, the `datetime` attribu
 
 ### CSS
 
-There is no CSS included with this component. You may target individual interval elements within the component by class name: `.years`, `.weeks`, `.days`, `.hours`, `.minutes`, or `.seconds`. All interval elements are `span` elements and are top-level children of the `time` wrapper element.
+There is no CSS included with this component. You may target individual interval elements within the component by class name: `.tenup-countdown-timer-years`, `.tenup-countdown-timer-weeks`, `.tenup-countdown-timer-days`, `.tenup-countdown-timer-hours`, `.tenup-countdown-timer-minutes`, or `.tenup-countdown-timer-seconds`. All interval elements are `span` elements and are top-level children of the `time` wrapper element.
 
 ### JavaScript
 
