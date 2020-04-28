@@ -2,7 +2,7 @@
 
 > A countdown timer component that displays the amount of time remaining until (or elapsed since) the time specified in the component's `datetime` attribute.
 
-[![Support Level](https://img.shields.io/badge/support-active-green.svg)](#support-level) [![Build Status][cli-img]][cli-url] [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Support Level](https://img.shields.io/badge/support-active-green.svg)](#support-level) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 
 [cli-img]: https://travis-ci.org/10up/component-countdown-timer.svg?branch=master
