@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * @module @10up/CountdownTimer
  *
@@ -10,14 +8,13 @@
  * [Link to demo]{@link https://10up.github.io/wp-component-library/component/countdown-timer/}
  */
 export default class CountdownTimer {
-
 	/**
+	 * Countdown Timer main constructor function
 	 *
 	 * @param {string} element Selector for target elements to receive a countdown timer.
 	 * @param {object} options (Optional) Object containing options. See `defaults` option for possible properties/values.
 	 */
-	constructor( element, options = {} ) {
-
+	constructor(element, options = {}) {
 		const defaults = {
 			onCreate: null,
 			onEnd: null,
@@ -30,101 +27,100 @@ export default class CountdownTimer {
 			years: {
 				allowed: true,
 				singular: 'year',
-				plural: 'years'
+				plural: 'years',
 			},
 			weeks: {
 				allowed: true,
 				singular: 'week',
-				plural: 'weeks'
+				plural: 'weeks',
 			},
 			days: {
 				allowed: true,
 				singular: 'day',
-				plural: 'days'
+				plural: 'days',
 			},
 			hours: {
 				allowed: true,
 				singular: 'hour',
-				plural: 'hours'
+				plural: 'hours',
 			},
 			minutes: {
 				allowed: true,
 				singular: 'minute',
-				plural: 'minutes'
+				plural: 'minutes',
 			},
 			seconds: {
 				allowed: true,
 				singular: 'second',
-				plural: 'seconds'
-			}
+				plural: 'seconds',
+			},
 		};
 
-		const intervals = [ 'years', 'weeks', 'days', 'hours', 'minutes', 'seconds' ];
+		const intervals = ['years', 'weeks', 'days', 'hours', 'minutes', 'seconds'];
 
 		// Guard against missing or invalid or missing properties in interval options.
-		intervals.forEach( interval => {
-			if ( options[interval] ) {
-				if ( false !== options[interval].allowed ) {
+		intervals.forEach((interval) => {
+			if (options[interval]) {
+				if (options[interval].allowed !== false) {
 					options[interval].allowed = defaults[interval].allowed;
 				}
 
-				if ( undefined === options[interval].singular ) {
+				if (undefined === options[interval].singular) {
 					options[interval].singular = defaults[interval].singular;
 				}
 
-				if ( undefined === options[interval].plural ) {
+				if (undefined === options[interval].plural) {
 					options[interval].plural = defaults[interval].plural;
 				}
 			}
-		} );
+		});
 
 		// Assign options to settings object.
-		this.settings = Object.assign( {}, defaults, options );
+		this.settings = { ...defaults, ...options };
 
-		this.$timers = Array.prototype.slice.call( document.querySelectorAll( element ) );
+		this.$timers = Array.prototype.slice.call(document.querySelectorAll(element));
 
-		if ( ! element || 0 === this.$timers.length ) {
+		if (!element || this.$timers.length === 0) {
 			console.error( '10up Countdown Timer: Target not found. Please provide a valid target selector.' ); // eslint-disable-line
 			return;
 		}
 
-		this.$timers.forEach( ( timer ) => {
-			this.createTimer( timer );
-		} );
+		this.$timers.forEach((timer) => {
+			this.createTimer(timer);
+		});
 	}
 
 	/**
 	 * Set up a countdown timer.
 	 *
 	 * @param {object} timer HTML element for this timer.
-	 * @returns null
 	 */
-	createTimer( timer ) {
-		let time = new Date( timer.getAttribute( 'datetime' ) ).getTime();
+	createTimer(timer) {
+		let time = new Date(timer.getAttribute('datetime')).getTime();
 
 		// Add a standardized class name for E2E tests.
-		timer.classList.add( 'tenup-countdown-timer' );
+		timer.classList.add('tenup-countdown-timer');
 
 		// Set role="timer" for assistive technologies, if not already set.
-		if ( 'timer' !== timer.getAttribute( 'role' ) ) {
-			timer.setAttribute( 'role', 'timer' );
+		if (timer.getAttribute('role') !== 'timer') {
+			timer.setAttribute('role', 'timer');
 		}
 
 		// Ensure timer is tabbable, by default.
-		if ( ! timer.getAttribute( 'tabindex' ) ) {
-			timer.setAttribute( 'tabindex', 0 );
+		if (!timer.getAttribute('tabindex')) {
+			timer.setAttribute('tabindex', 0);
 		}
 
 		// Give the timer a name, if it lacks one.
-		if ( ! timer.getAttribute( 'aria-label' ) ) {
-			timer.setAttribute( 'aria-label', 'Countdown timer' );
+		if (!timer.getAttribute('aria-label')) {
+			timer.setAttribute('aria-label', 'Countdown timer');
 		}
 
 		// Set aria-atomic="true" so that when updated, the full time will always be spoken by assistive technologies.
-		timer.setAttribute( 'aria-atomic', 'true' );
+		timer.setAttribute('aria-atomic', 'true');
 
 		// Check for a valid date string in the `datetime` attribute.
-		if ( ! time || isNaN( time ) ) {
+		if (!time || isNaN(time)) {
 			console.error( '10up Countdown Timer: Time not found. Each countdown timer must have a datetime attribute with a valid date string. See https://developer.mozilla.org/en-US/docs/Web/HTML/Date_and_time_formats for details on how to build a valid date string.' ); // eslint-disable-line
 			time = new Date().getTime();
 		}
@@ -134,16 +130,17 @@ export default class CountdownTimer {
 
 		/**
 		 * Called after a countdown timer is initialized.
+		 *
 		 * @callback onCreate
 		 */
-		if ( this.settings.onCreate && 'function' === typeof this.settings.onCreate ) {
-			this.settings.onCreate.call( this, {
+		if (this.settings.onCreate && typeof this.settings.onCreate === 'function') {
+			this.settings.onCreate.call(this, {
 				element: timer,
-				time
-			} );
+				time,
+			});
 		}
 
-		this.createElements( timer, time );
+		this.createElements(timer, time);
 	}
 
 	/**
@@ -151,10 +148,9 @@ export default class CountdownTimer {
 	 *
 	 * @param {object} timer HTML element for this timer.
 	 * @param {number} time  Time to count down to in UNIX time.
-	 * @returns void
 	 */
-	createElements( timer, time ) {
-		const span = document.createElement( 'span' );
+	createElements(timer, time) {
+		const span = document.createElement('span');
 		const years = span.cloneNode();
 		const weeks = span.cloneNode();
 		const days = span.cloneNode();
@@ -164,71 +160,86 @@ export default class CountdownTimer {
 		const fragment = document.createDocumentFragment();
 
 		years.className = 'tenup-countdown-timer-years';
-		years.setAttribute( 'aria-label', 'years' );
+		years.setAttribute('aria-label', 'years');
 
 		weeks.className = 'tenup-countdown-timer-weeks';
-		weeks.setAttribute( 'aria-label', 'weeks' );
+		weeks.setAttribute('aria-label', 'weeks');
 
 		days.className = 'tenup-countdown-timer-days';
-		days.setAttribute( 'aria-label', 'days' );
+		days.setAttribute('aria-label', 'days');
 
 		hours.className = 'tenup-countdown-timer-hours';
-		hours.setAttribute( 'aria-label', 'hours' );
+		hours.setAttribute('aria-label', 'hours');
 
 		minutes.className = 'tenup-countdown-timer-minutes';
-		minutes.setAttribute( 'aria-label', 'minutes' );
+		minutes.setAttribute('aria-label', 'minutes');
 
 		seconds.className = 'tenup-countdown-timer-seconds';
-		seconds.setAttribute( 'aria-label', 'seconds' );
-		seconds.setAttribute( 'aria-hidden', 'true' ); // Seconds should not be spoken by assistive technologies unless it's the highest interval.
+		seconds.setAttribute('aria-label', 'seconds');
+		seconds.setAttribute('aria-hidden', 'true'); // Seconds should not be spoken by assistive technologies unless it's the highest interval.
 
-		if ( this.settings.years.allowed ) {
-			fragment.appendChild( years );
+		if (this.settings.years.allowed) {
+			fragment.appendChild(years);
 
-			if ( this.settings.weeks.allowed || this.settings.days.allowed || this.settings.hours.allowed || this.settings.minutes.allowed || this.settings.seconds.allowed ) {
-				fragment.appendChild( document.createTextNode( this.settings.separator ) );
+			if (
+				this.settings.weeks.allowed ||
+				this.settings.days.allowed ||
+				this.settings.hours.allowed ||
+				this.settings.minutes.allowed ||
+				this.settings.seconds.allowed
+			) {
+				fragment.appendChild(document.createTextNode(this.settings.separator));
 			}
 		}
 
-		if ( this.settings.weeks.allowed ) {
-			fragment.appendChild( weeks );
+		if (this.settings.weeks.allowed) {
+			fragment.appendChild(weeks);
 
-			if ( this.settings.days.allowed || this.settings.hours.allowed || this.settings.minutes.allowed || this.settings.seconds.allowed ) {
-				fragment.appendChild( document.createTextNode( this.settings.separator ) );
+			if (
+				this.settings.days.allowed ||
+				this.settings.hours.allowed ||
+				this.settings.minutes.allowed ||
+				this.settings.seconds.allowed
+			) {
+				fragment.appendChild(document.createTextNode(this.settings.separator));
 			}
 		}
 
-		if ( this.settings.days.allowed ) {
-			fragment.appendChild( days );
+		if (this.settings.days.allowed) {
+			fragment.appendChild(days);
 
-			if ( this.settings.hours.allowed || this.settings.minutes.allowed || this.settings.seconds.allowed ) {
-				fragment.appendChild( document.createTextNode( this.settings.separator ) );
+			if (
+				this.settings.hours.allowed ||
+				this.settings.minutes.allowed ||
+				this.settings.seconds.allowed
+			) {
+				fragment.appendChild(document.createTextNode(this.settings.separator));
 			}
 		}
 
-		if ( this.settings.hours.allowed ) {
-			fragment.appendChild( hours );
+		if (this.settings.hours.allowed) {
+			fragment.appendChild(hours);
 
-			if ( this.settings.minutes.allowed || this.settings.seconds.allowed ) {
-				fragment.appendChild( document.createTextNode( this.settings.separator ) );
+			if (this.settings.minutes.allowed || this.settings.seconds.allowed) {
+				fragment.appendChild(document.createTextNode(this.settings.separator));
 			}
 		}
 
-		if ( this.settings.minutes.allowed ) {
-			fragment.appendChild( minutes );
+		if (this.settings.minutes.allowed) {
+			fragment.appendChild(minutes);
 
-			if ( this.settings.seconds.allowed ) {
-				fragment.appendChild( document.createTextNode( this.settings.separator ) );
+			if (this.settings.seconds.allowed) {
+				fragment.appendChild(document.createTextNode(this.settings.separator));
 			}
 		}
 
-		if ( this.settings.seconds.allowed ) {
-			fragment.appendChild( seconds );
+		if (this.settings.seconds.allowed) {
+			fragment.appendChild(seconds);
 		}
 
-		timer.appendChild( fragment );
+		timer.appendChild(fragment);
 
-		this.startTimer( timer, time, [ years, weeks, days, hours, minutes, seconds ] );
+		this.startTimer(timer, time, [years, weeks, days, hours, minutes, seconds]);
 	}
 
 	/**
@@ -236,12 +247,12 @@ export default class CountdownTimer {
 	 *
 	 * @param {object} timer     HTML element for this timer.
 	 * @param {number} time      Time to count down to in UNIX time.
-	 * @param {array}  intervals Array of HTML elements for intervals to display.
+	 * @param {Array}  intervals Array of HTML elements for intervals to display.
 	 */
-	startTimer( timer, time, intervals ) {
-
+	startTimer(timer, time, intervals) {
 		// If seconds won't ever be shown, save performance by ticking once per minute.
 		let delay = this.settings.seconds.allowed ? 1000 : 1000 * 60;
+		let repeat;
 
 		/**
 		 * Update the timer display.
@@ -249,137 +260,141 @@ export default class CountdownTimer {
 		 * the setInterval function that's created within this scope.
 		 */
 		const updateTime = () => {
-			const [ years, weeks, days, hours, minutes, seconds ] = intervals;
+			const [years, weeks, days, hours, minutes, seconds] = intervals;
 			const now = new Date().getTime();
 			const diff = time - now;
-			const isNegative = 0 > diff;
-			const parsedDiff = this.formatDiff( diff, time );
-			const [ y, w, d, h, m, s ] = parsedDiff;
+			const isNegative = diff < 0;
+			const parsedDiff = this.formatDiff(diff, time);
+			const [y, w, d, h, m, s] = parsedDiff;
 			let highestNonzero;
 
 			// Find the highest non-zero value.
-			parsedDiff.find( ( remaining, index ) => {
-				if ( 0 < remaining ) {
+			parsedDiff.find((remaining, index) => {
+				if (remaining > 0) {
 					highestNonzero = index;
 					return remaining;
-				} else if ( highestNonzero === undefined && ! intervals[index].classList.contains ( 'tenup-countdown-timer-seconds' ) ) {
-
+				}
+				if (
+					highestNonzero === undefined &&
+					!intervals[index].classList.contains('tenup-countdown-timer-seconds')
+				) {
 					// If the value of this interval is zero and there are no larger non-zero intervals, hide it from assistive technologies.
-					intervals[index].setAttribute( 'aria-hidden', 'true' );
+					intervals[index].setAttribute('aria-hidden', 'true');
 
 					// If showZeroes is not enabled, remove leading zero-value intervals.
-					if ( ! this.settings.showZeroes && timer.contains( intervals[index] ) ) {
-						if ( intervals[index].nextSibling ) {
-							timer.removeChild( intervals[index].nextSibling );
+					if (!this.settings.showZeroes && timer.contains(intervals[index])) {
+						if (intervals[index].nextSibling) {
+							timer.removeChild(intervals[index].nextSibling);
 						}
 
-						timer.removeChild( intervals[index] );
+						timer.removeChild(intervals[index]);
 					}
 				}
-			} );
+			});
 
 			// If seconds are the highest non-zero interval, unhide them from assitive technologies.
-			if ( highestNonzero === intervals.length - 1 ) {
-				timer.setAttribute( 'aria-live', 'polite' );
-				intervals[highestNonzero].setAttribute( 'aria-hidden', 'false' );
+			if (highestNonzero === intervals.length - 1) {
+				timer.setAttribute('aria-live', 'polite');
+				intervals[highestNonzero].setAttribute('aria-hidden', 'false');
 			} else {
-
 				// Only speak timer contents aloud once per minute.
-				if ( 0 === parsedDiff[5] ) {
-					timer.setAttribute( 'aria-live', 'polite' );
+				if (parsedDiff[5] === 0) {
+					timer.setAttribute('aria-live', 'polite');
 				} else {
-					timer.setAttribute( 'aria-live', 'off' );
+					timer.setAttribute('aria-live', 'off');
 				}
 			}
 
-			if ( undefined !== highestNonzero ) {
-
+			if (undefined !== highestNonzero) {
 				// Hide all elements except the highest non-zero value.
-				intervals.forEach( ( interval, index ) => {
-
+				intervals.forEach((interval, index) => {
 					// If there's a separator character, remove it.
-					if ( this.settings.compact && interval.previousSibling ) {
-						timer.removeChild( interval.previousSibling );
+					if (this.settings.compact && interval.previousSibling) {
+						timer.removeChild(interval.previousSibling);
 					}
 
-					if ( highestNonzero === index ) {
-
-						if ( ! timer.contains( interval ) ) {
-							timer.appendChild( interval );
+					if (highestNonzero === index) {
+						if (!timer.contains(interval)) {
+							timer.appendChild(interval);
 						}
-					} else if ( this.settings.compact && timer.contains( interval ) ) {
-						timer.removeChild( interval );
+					} else if (this.settings.compact && timer.contains(interval)) {
+						timer.removeChild(interval);
 
 						/**
 						 * If we're counting up and seconds won't be shown anymore, save performance by ticking once per minute.
 						 * If we're counting down, we have to keep ticking once per second to maintain an accurante countdown
 						 * once we transition to seconds.
 						 */
-						if ( isNegative && interval.classList.contains ( 'tenup-countdown-timer-seconds' ) ) {
+						if (
+							isNegative &&
+							interval.classList.contains('tenup-countdown-timer-seconds')
+						) {
 							delay = 1000 * 60;
 						}
 					}
-				} );
+				});
 			}
 
 			// If negative values are not allowed and the time is in the past, set everything to show 0.
-			if ( 0 >= diff && ! this.settings.allowNegative ) {
-				this.updateDisplay( timer, years, 0, this.settings.years );
-				this.updateDisplay( timer, weeks, 0, this.settings.weeks );
-				this.updateDisplay( timer, days, 0, this.settings.days );
-				this.updateDisplay( timer, hours, 0, this.settings.hours );
-				this.updateDisplay( timer, minutes, 0, this.settings.minutes );
-				this.updateDisplay( timer, seconds, 0, this.settings.seconds );
+			if (diff <= 0 && !this.settings.allowNegative) {
+				this.updateDisplay(timer, years, 0, this.settings.years);
+				this.updateDisplay(timer, weeks, 0, this.settings.weeks);
+				this.updateDisplay(timer, days, 0, this.settings.days);
+				this.updateDisplay(timer, hours, 0, this.settings.hours);
+				this.updateDisplay(timer, minutes, 0, this.settings.minutes);
+				this.updateDisplay(timer, seconds, 0, this.settings.seconds);
 
 				// If the timer is stopped, stop ticking.
-				if ( repeat ) {
-					window.clearInterval( repeat );
+				if (repeat) {
+					window.clearInterval(repeat);
 				}
 
 				/**
 				 * Called after this countdown timer has reached zero.
+				 *
 				 * @callback onEnd
 				 */
-				if ( this.settings.onEnd && 'function' === typeof this.settings.onEnd ) {
-					this.settings.onEnd.call( this, {
+				if (this.settings.onEnd && typeof this.settings.onEnd === 'function') {
+					this.settings.onEnd.call(this, {
 						element: timer,
-						time
-					} );
+						time,
+					});
 				}
 
 				return;
 			}
 
-			this.updateDisplay( timer, years, y, this.settings.years );
-			this.updateDisplay( timer, weeks, w, this.settings.weeks );
-			this.updateDisplay( timer, days, d, this.settings.days );
-			this.updateDisplay( timer, hours, h, this.settings.hours );
-			this.updateDisplay( timer, minutes, m, this.settings.minutes );
-			this.updateDisplay( timer, seconds, s, this.settings.seconds );
+			this.updateDisplay(timer, years, y, this.settings.years);
+			this.updateDisplay(timer, weeks, w, this.settings.weeks);
+			this.updateDisplay(timer, days, d, this.settings.days);
+			this.updateDisplay(timer, hours, h, this.settings.hours);
+			this.updateDisplay(timer, minutes, m, this.settings.minutes);
+			this.updateDisplay(timer, seconds, s, this.settings.seconds);
 
 			/**
 			 * Called after the current countdown timer updates.
+			 *
 			 * @callback onTick
 			 */
-			if ( this.settings.onTick && 'function' === typeof this.settings.onTick ) {
-				this.settings.onTick.call( this, {
+			if (this.settings.onTick && typeof this.settings.onTick === 'function') {
+				this.settings.onTick.call(this, {
 					element: timer,
 					time,
 					diff,
 					isNegative,
-					years: parseInt( y ),
-					weeks: parseInt( w ),
-					days: parseInt( d ),
-					hours: parseInt( h ),
-					minutes: parseInt( m ),
-					seconds: parseInt( s )
-				} );
+					years: parseInt(y, 10),
+					weeks: parseInt(w, 10),
+					days: parseInt(d, 10),
+					hours: parseInt(h, 10),
+					minutes: parseInt(m, 10),
+					seconds: parseInt(s, 10),
+				});
 			}
 		};
 
 		updateTime();
 
-		const repeat = window.setInterval( updateTime, delay );
+		repeat = window.setInterval(updateTime, delay);
 	}
 
 	/**
@@ -387,42 +402,43 @@ export default class CountdownTimer {
 	 *
 	 * @param {number} milliseconds Number of milliseconds remaining in the countdown.
 	 * @param {number} time         Time we're counting to, in milliseconds.
+	 * @returns {number} null
 	 */
-	formatDiff( milliseconds, time ) {
+	formatDiff(milliseconds, time) {
 		const msPerSecond = 1000;
 		const msPerMinute = 60 * msPerSecond;
 		const msPerHour = 60 * msPerMinute;
 		const msPerDay = 24 * msPerHour;
-		const isNegative = 0 > milliseconds;
+		const isNegative = milliseconds < 0;
 		const now = new Date();
-		const finalYear = new Date( time ).getFullYear();
-		const hours = Math.floor( Math.abs( milliseconds ) % msPerDay / msPerHour ),
-			minutes = Math.floor( Math.abs( milliseconds ) % msPerHour / msPerMinute ),
-			seconds = Math.floor( Math.abs( milliseconds ) % msPerMinute / msPerSecond );
+		const finalYear = new Date(time).getFullYear();
+		const hours = Math.floor((Math.abs(milliseconds) % msPerDay) / msPerHour);
+		const minutes = Math.floor((Math.abs(milliseconds) % msPerHour) / msPerMinute);
+		const seconds = Math.floor((Math.abs(milliseconds) % msPerMinute) / msPerSecond);
 
-		let years = 0,
-			weeks = 0,
-			days = Math.floor( Math.abs( milliseconds ) / msPerDay ),
-			yearToCheck = now.getFullYear(),
-			checkYear = yearToCheck !== finalYear;
+		let years = 0;
+		let weeks = 0;
+		let days = Math.floor(Math.abs(milliseconds) / msPerDay);
+		let yearToCheck = now.getFullYear();
+		let checkYear = yearToCheck !== finalYear;
 
 		/**
 		 * Because years are not a constant number of milliseconds, we have to calculate from the number of days.
 		 * Loop through each year in the diff to determine whether it's a leap year (366 days instead of 365).
 		 */
-		while ( checkYear && 365 <= days ) {
-			years ++;
+		while (checkYear && days >= 365) {
+			years++;
 
-			if ( this.isLeapYear( yearToCheck ) ) {
+			if (this.isLeapYear(yearToCheck)) {
 				days -= 366;
 			} else {
 				days -= 365;
 			}
 
-			if ( isNegative ) {
-				yearToCheck --;
+			if (isNegative) {
+				yearToCheck--;
 			} else {
-				yearToCheck ++;
+				yearToCheck++;
 			}
 
 			checkYear = yearToCheck !== finalYear;
@@ -432,21 +448,28 @@ export default class CountdownTimer {
 		 * Now that we know the total number of years in the diff, calculate the number of weeks left in the remainder.
 		 * This is easier than calculating years because a week is always exactly 7 days.
 		 */
-		while ( 7 <= days ) {
+		while (days >= 7) {
 			days -= 7;
-			weeks ++;
+			weeks++;
 
 			/**
 			 * If the number of weeks exceeds a year, add a year and reset week counter.
 			 * A year isn't *exactly* 52 weeks, but the difference within a year is small enough to ignore.
 			 */
-			if ( 52 <= weeks ) {
+			if (weeks >= 52) {
 				weeks = 0;
-				years ++;
+				years++;
 			}
 		}
 
-		return [ this.pad( years ), this.pad( weeks ), this.pad( days ), this.pad( hours ), this.pad( minutes ), this.pad( seconds ) ];
+		return [
+			this.pad(years),
+			this.pad(weeks),
+			this.pad(days),
+			this.pad(hours),
+			this.pad(minutes),
+			this.pad(seconds),
+		];
 	}
 
 	/**
@@ -457,13 +480,13 @@ export default class CountdownTimer {
 	 * @param {string} value    String value to display in the interval element.
 	 * @param {object} label    Object containing interval label data.
 	 */
-	updateDisplay( timer, interval, value, label ) {
-		if ( timer.contains( interval ) ) {
+	updateDisplay(timer, interval, value, label) {
+		if (timer.contains(interval)) {
 			// Otherwise, update the display.
-			const units = 1 < value || 0 === value ? label.plural : label.singular;
+			const units = value > 1 || value === 0 ? label.plural : label.singular;
 
-			interval.textContent = `${ value } ${ units }`;
-			interval.setAttribute( 'aria-label', `${ value } ${ units }` );
+			interval.textContent = `${value} ${units}`;
+			interval.setAttribute('aria-label', `${value} ${units}`);
 		}
 	}
 
@@ -471,21 +494,22 @@ export default class CountdownTimer {
 	 * Check if given number `n` is less than 10, and pad with a leading zero if so.
 	 *
 	 * @param {number} n Number to pad.
+	 * @returns {number} n
 	 */
-	pad( n ) {
-		if ( this.settings.padValues ) {
-			return 10 > n ? `0${ n }` : n;
-		} else {
-			return n;
+	pad(n) {
+		if (this.settings.padValues) {
+			return n < 10 ? `0${n}` : n;
 		}
+		return n;
 	}
 
 	/**
 	 * Check whether the given year is a leap year.
 	 *
-	 * @param {number} Year Year to check.
+	 * @param {number} year the year being checking
+	 * @returns {number} year
 	 */
-	isLeapYear( year ) {
-		return 0 === year % 100 ? 0 === year % 400 : 0 === year % 4;
+	isLeapYear(year) {
+		return year % 100 === 0 ? year % 400 === 0 : year % 4 === 0;
 	}
 }

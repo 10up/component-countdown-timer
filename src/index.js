@@ -2,7 +2,7 @@
 
 import CountdownTimer from './countdown-timer';
 
-if ( 'object' !== typeof window.TenUp ) {
+if (typeof window.TenUp !== 'object') {
 	window.TenUp = {};
 }
 
