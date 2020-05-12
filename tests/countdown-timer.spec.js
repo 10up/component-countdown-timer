@@ -1,6 +1,6 @@
 import puppeteer from 'puppeteer';
 
-const APP = 'https://10up.github.io/component-countdown-timer/demo/';
+const APP = 'http://localhost:8000/demo/';
 const width = 1440;
 const height = 860;
 
@@ -28,7 +28,7 @@ describe( 'Accessibility Tests: Countdown Timer', () => {
 
 		// Visit the page in headless Chrome
 		await page.goto( APP );
-		
+
 		const timers = await page.$$eval( '.tenup-countdown-timer', el => {
 			return el.map( x => {
 				return {
@@ -43,7 +43,6 @@ describe( 'Accessibility Tests: Countdown Timer', () => {
 		timers.forEach( attrs => {
 			expect( attrs.role ).toEqual( 'timer' );
 			expect( attrs.atomic ).toEqual( 'true' );
-			expect( attrs.live ).toEqual( 'off' );
 		} );
 	} );
 
@@ -90,22 +89,6 @@ describe( 'Accessibility Tests: Countdown Timer', () => {
 		} )
 	} );
 
-	test( 'Keyboard accessibility of timers', async () => {
-
-		// Visit the page in headless Chrome
-		await page.goto( APP );
-		let accessibilityTree;
-
-		// Tab into the UI
-		await page.keyboard.press( 'Tab' );
-
-		// Enter the content
-		await page.keyboard.press( 'Tab' );
-		accessibilityTree = await page.accessibility.snapshot();
-
-		// If the timer is tabbable, we should be able to see its children after tabbing into it.
-		expect( accessibilityTree.children ).toBeDefined();
-	} );
 } );
 
 afterAll( () => {
