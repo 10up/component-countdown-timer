@@ -68,22 +68,22 @@ describe( 'Accessibility Tests: Countdown Timer', () => {
 			children.forEach( ( child, index ) => {
 				switch( index ) {
 					case 0:
-						expect( child ).toEqual( 'years' );
+						expect( child ).toEqual( 'tenup-countdown-timer-years' );
 						break;
 					case 1:
-						expect( child ).toEqual( 'weeks' );
+						expect( child ).toEqual( 'tenup-countdown-timer-weeks' );
 						break;
 					case 2:
-						expect( child ).toEqual( 'days' );
+						expect( child ).toEqual( 'tenup-countdown-timer-days' );
 						break;
 					case 3:
-						expect( child ).toEqual( 'hours' );
+						expect( child ).toEqual( 'tenup-countdown-timer-hours' );
 						break;
 					case 4:
-						expect( child ).toEqual( 'minutes' );
+						expect( child ).toEqual( 'tenup-countdown-timer-minutes' );
 						break;
 					case 5:
-						expect( child ).toEqual( 'seconds' );
+						expect( child ).toEqual( 'tenup-countdown-timer-seconds' );
 						break;
 				}
 			} );
