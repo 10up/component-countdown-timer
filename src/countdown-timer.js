@@ -57,26 +57,27 @@ export default class CountdownTimer {
 		};
 
 		const intervals = ['years', 'weeks', 'days', 'hours', 'minutes', 'seconds'];
+		const opts = options;
 
 		// Guard against missing or invalid or missing properties in interval options.
 		intervals.forEach((interval) => {
-			if (options[interval]) {
-				if (options[interval].allowed !== false) {
-					options[interval].allowed = defaults[interval].allowed;
+			if (opts[interval]) {
+				if (opts[interval].allowed !== false) {
+					opts[interval].allowed = defaults[interval].allowed;
 				}
 
-				if (undefined === options[interval].singular) {
-					options[interval].singular = defaults[interval].singular;
+				if (undefined === opts[interval].singular) {
+					opts[interval].singular = defaults[interval].singular;
 				}
 
-				if (undefined === options[interval].plural) {
-					options[interval].plural = defaults[interval].plural;
+				if (undefined === opts[interval].plural) {
+					opts[interval].plural = defaults[interval].plural;
 				}
 			}
 		});
 
 		// Assign options to settings object.
-		this.settings = { ...defaults, ...options };
+		this.settings = { ...defaults, ...opts };
 
 		this.$timers = Array.prototype.slice.call(document.querySelectorAll(element));
 
@@ -96,37 +97,33 @@ export default class CountdownTimer {
 	 * @param {object} timer HTML element for this timer.
 	 */
 	createTimer(timer) {
-		let time = new Date(timer.getAttribute('datetime')).getTime();
+		const tmr = timer;
+		let time = new Date(tmr.getAttribute('datetime')).getTime();
 
 		// Add a standardized class name for E2E tests.
-		timer.classList.add('tenup-countdown-timer');
+		tmr.classList.add('tenup-countdown-timer');
 
 		// Set role="timer" for assistive technologies, if not already set.
-		if (timer.getAttribute('role') !== 'timer') {
-			timer.setAttribute('role', 'timer');
-		}
-
-		// Ensure timer is tabbable, by default.
-		if (!timer.getAttribute('tabindex')) {
-			timer.setAttribute('tabindex', 0);
+		if (tmr.getAttribute('role') !== 'timer') {
+			tmr.setAttribute('role', 'timer');
 		}
 
 		// Give the timer a name, if it lacks one.
-		if (!timer.getAttribute('aria-label')) {
-			timer.setAttribute('aria-label', 'Countdown timer');
+		if (!tmr.getAttribute('aria-label')) {
+			tmr.setAttribute('aria-label', 'Countdown timer');
 		}
 
 		// Set aria-atomic="true" so that when updated, the full time will always be spoken by assistive technologies.
-		timer.setAttribute('aria-atomic', 'true');
+		tmr.setAttribute('aria-atomic', 'true');
 
 		// Check for a valid date string in the `datetime` attribute.
-		if (!time || isNaN(time)) {
+		if (!time || Number.isNaN(time)) {
 			console.error( '10up Countdown Timer: Time not found. Each countdown timer must have a datetime attribute with a valid date string. See https://developer.mozilla.org/en-US/docs/Web/HTML/Date_and_time_formats for details on how to build a valid date string.' ); // eslint-disable-line
 			time = new Date().getTime();
 		}
 
 		// Clear fallback content.
-		timer.textContent = '';
+		tmr.textContent = '';
 
 		/**
 		 * Called after a countdown timer is initialized.
@@ -140,7 +137,7 @@ export default class CountdownTimer {
 			});
 		}
 
-		this.createElements(timer, time);
+		this.createElements(tmr, time);
 	}
 
 	/**
@@ -269,11 +266,13 @@ export default class CountdownTimer {
 			let highestNonzero;
 
 			// Find the highest non-zero value.
+			/*eslint-disable */
 			parsedDiff.find((remaining, index) => {
 				if (remaining > 0) {
 					highestNonzero = index;
 					return remaining;
 				}
+
 				if (
 					highestNonzero === undefined &&
 					!intervals[index].classList.contains('tenup-countdown-timer-seconds')
@@ -291,6 +290,7 @@ export default class CountdownTimer {
 					}
 				}
 			});
+			/* eslint-enable */
 
 			// If seconds are the highest non-zero interval, unhide them from assitive technologies.
 			if (highestNonzero === intervals.length - 1) {
@@ -298,11 +298,13 @@ export default class CountdownTimer {
 				intervals[highestNonzero].setAttribute('aria-hidden', 'false');
 			} else {
 				// Only speak timer contents aloud once per minute.
+				/*eslint-disable */
 				if (parsedDiff[5] === 0) {
 					timer.setAttribute('aria-live', 'polite');
 				} else {
 					timer.setAttribute('aria-live', 'off');
 				}
+				/* eslint-enable */
 			}
 
 			if (undefined !== highestNonzero) {
@@ -427,7 +429,7 @@ export default class CountdownTimer {
 		 * Loop through each year in the diff to determine whether it's a leap year (366 days instead of 365).
 		 */
 		while (checkYear && days >= 365) {
-			years++;
+			years += 1;
 
 			if (this.isLeapYear(yearToCheck)) {
 				days -= 366;
@@ -436,9 +438,9 @@ export default class CountdownTimer {
 			}
 
 			if (isNegative) {
-				yearToCheck--;
+				yearToCheck -= 1;
 			} else {
-				yearToCheck++;
+				yearToCheck += 1;
 			}
 
 			checkYear = yearToCheck !== finalYear;
@@ -450,7 +452,7 @@ export default class CountdownTimer {
 		 */
 		while (days >= 7) {
 			days -= 7;
-			weeks++;
+			weeks += 1;
 
 			/**
 			 * If the number of weeks exceeds a year, add a year and reset week counter.
@@ -458,7 +460,7 @@ export default class CountdownTimer {
 			 */
 			if (weeks >= 52) {
 				weeks = 0;
-				years++;
+				years += 1;
 			}
 		}
 
@@ -484,9 +486,10 @@ export default class CountdownTimer {
 		if (timer.contains(interval)) {
 			// Otherwise, update the display.
 			const units = value > 1 || value === 0 ? label.plural : label.singular;
+			const intvl = interval;
 
-			interval.textContent = `${value} ${units}`;
-			interval.setAttribute('aria-label', `${value} ${units}`);
+			intvl.textContent = `${value} ${units}`;
+			intvl.setAttribute('aria-label', `${value} ${units}`);
 		}
 	}
 
