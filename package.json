@@ -1,6 +1,6 @@
 {
   "name": "@10up/countdown-timer",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "10up",
   "description": "A countdown timer component.",
   "main": "./src/countdown-timer.js",
