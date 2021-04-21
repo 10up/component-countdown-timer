@@ -1,5 +1,7 @@
 # 10up Countdown Timer component
 
+**DEPRECATED.** Please go to https://github.com/10up/component-library
+
 > A countdown timer component that displays the amount of time remaining until (or elapsed since) the time specified in the component's `datetime` attribute.
 
 [![Support Level](https://img.shields.io/badge/support-active-green.svg)](#support-level) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Build Status][cli-img]][cli-url]
